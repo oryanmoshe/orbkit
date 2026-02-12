@@ -4,6 +4,7 @@ Composable, animated orb effects for React.
 
 [![Work in Progress](https://img.shields.io/badge/status-work%20in%20progress-yellow)](https://github.com/oryanmoshe/orbkit)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/oryanmoshe/orbkit?utm_source=oss&utm_medium=github&utm_campaign=oryanmoshe%2Forbkit&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)](https://coderabbit.ai)
 
 ## Usage
 
