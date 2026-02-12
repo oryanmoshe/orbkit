@@ -14,7 +14,7 @@ export function hexToHsl(hex: string): HslColor {
   const l = (max + min) / 2;
 
   if (max === min) {
-    return { h: 0, s: 0, l };
+    return { h: 0, s: 0, l: l * 100 };
   }
 
   const d = max - min;

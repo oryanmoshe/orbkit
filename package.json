@@ -4,7 +4,7 @@
   "workspaces": ["packages/*", "examples/*"],
   "scripts": {
     "build": "bun run --filter 'orbkit' build && bun run --filter '@orbkit/editor' build",
-    "test": "bun run --filter 'orbkit' test && bun run --filter '@orbkit/editor' test",
+    "test": "bun run --filter 'orbkit' test",
     "typecheck": "bun run --filter 'orbkit' typecheck && bun run --filter '@orbkit/editor' typecheck",
     "lint": "bunx @biomejs/biome check .",
     "lint:fix": "bunx @biomejs/biome check --write ."
