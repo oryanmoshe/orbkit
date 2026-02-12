@@ -11,7 +11,7 @@ enable_free_tier: true
 
 reviews:
   profile: "assertive"
-  request_changes_workflow: false
+  request_changes_workflow: true
   high_level_summary: true
   collapse_walkthrough: true
   commit_status: true
@@ -45,6 +45,12 @@ reviews:
     - "**/*.config.{ts,js}"
     - "**/tsconfig.json"
     - "**/biome.json"
+    - "**/*.yml"
+    - "**/*.yaml"
+    - "**/*.json"
+    - "**/*.md"
+    - ".gitignore"
+    - ".github/**"
     - "!**/dist/**"
     - "!**/node_modules/**"
     - "!bun.lock"
@@ -103,45 +109,40 @@ reviews:
       threshold: 80
     custom_checks:
       - name: "No console.log"
-        pattern: "console\\.(log|debug|info)"
-        message: "Remove console statements before merging"
-        level: "warning"
+        instructions: "Flag any console.log, console.debug, or console.info statements in production code. These must be removed before merging."
+        mode: "warning"
       - name: "No focused tests"
-        pattern: "(describe|it|test)\\.only"
-        message: "Remove .only from tests before merging"
-        level: "error"
+        instructions: "Flag any .only() calls on describe, it, or test blocks that would skip other tests. These must be removed before merging."
+        mode: "error"
 
   enable_prompt_for_ai_agents: true
 
-tools:
-  biome:
-    enabled: true
-  eslint:
-    enabled: false
-  gitleaks:
-    enabled: true
-  ast-grep:
-    enabled: true
-  semgrep:
-    enabled: true
-  markdownlint:
-    enabled: true
-  yamllint:
-    enabled: true
-
-  # Disabled — not relevant
-  ruff:
-    enabled: false
-  pylint:
-    enabled: false
-  rubocop:
-    enabled: false
-  golangci-lint:
-    enabled: false
-  clippy:
-    enabled: false
-  swiftlint:
-    enabled: false
+  tools:
+    biome:
+      enabled: true
+    eslint:
+      enabled: false
+    gitleaks:
+      enabled: true
+    ast-grep: {}
+    semgrep:
+      enabled: true
+    markdownlint:
+      enabled: true
+    yamllint:
+      enabled: true
+    ruff:
+      enabled: false
+    pylint:
+      enabled: false
+    rubocop:
+      enabled: false
+    golangci-lint:
+      enabled: false
+    clippy:
+      enabled: false
+    swiftlint:
+      enabled: false
 
 knowledge_base:
   opt_out: false
