@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.4.3",
+  "checkpoint_id": "493381e3f0b2",
+  "strategy": "auto-commit",
+  "branch": "fix/lefthook-regex",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/49/3381e3f0b2/0/metadata.json",
+      "transcript": "/49/3381e3f0b2/0/full.jsonl",
+      "context": "",
+      "content_hash": "/49/3381e3f0b2/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
