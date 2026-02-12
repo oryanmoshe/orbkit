@@ -1,0 +1,23 @@
+{
+  "cli_version": "0.4.3",
+  "checkpoint_id": "71ebb6718609",
+  "session_id": "84e38287-7795-4457-b9e3-276a269960ee",
+  "strategy": "auto-commit",
+  "created_at": "2026-02-12T22:44:23.755967Z",
+  "branch": "fix/lefthook-regex",
+  "checkpoints_count": 1,
+  "files_touched": [
+    ".claude/settings.local.json"
+  ],
+  "agent": "Claude Code",
+  "transcript_identifier_at_start": "125f6536-378b-4f1c-a3f7-321fcd0892cb",
+  "checkpoint_transcript_start": 785,
+  "transcript_lines_at_start": 785,
+  "token_usage": {
+    "input_tokens": 9,
+    "cache_creation_tokens": 3301,
+    "cache_read_tokens": 1044960,
+    "output_tokens": 268,
+    "api_call_count": 7
+  }
+}

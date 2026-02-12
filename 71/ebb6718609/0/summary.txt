@@ -1,0 +1,7 @@
+PR created: https://github.com/oryanmoshe/orbkit/pull/1
+
+Branch protection is working — we can't push directly to main anymore. This PR will trigger CI and CodeRabbit should review it too. Let's see if CodeRabbit does its thing.
+
+Sources:
+- [JSX Syntax highlighting broken - github-linguist](https://github.com/github/linguist/issues/3044)
+- [Markdown syntax highlighting breaks at collapsed JSX - VS Code](https://github.com/microsoft/vscode/issues/60015)
