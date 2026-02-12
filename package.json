@@ -1,0 +1,17 @@
+{
+  "name": "orbkit-monorepo",
+  "private": true,
+  "workspaces": ["packages/*", "examples/*"],
+  "scripts": {
+    "build": "bun run --filter 'orbkit' build && bun run --filter '@orbkit/editor' build",
+    "test": "bun run --filter 'orbkit' test && bun run --filter '@orbkit/editor' test",
+    "typecheck": "bun run --filter 'orbkit' typecheck && bun run --filter '@orbkit/editor' typecheck",
+    "lint": "bunx @biomejs/biome check .",
+    "lint:fix": "bunx @biomejs/biome check --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.0",
+    "lefthook": "^2.1.1",
+    "typescript": "^5.6.0"
+  }
+}

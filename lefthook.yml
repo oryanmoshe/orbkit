@@ -1,0 +1,45 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: typecheck
+      run: bun run typecheck
+
+    - name: lint
+      glob: "*.{js,jsx,ts,tsx,json,css}"
+      run: bunx @biomejs/biome check --no-errors-on-unmatched {staged_files}
+
+    - name: check-docs
+      run: |
+        CODE_CHANGED=false
+        DOCS_CHANGED=false
+        for file in $(git diff --cached --name-only); do
+          case "$file" in
+            packages/*/src/*.ts|packages/*/src/*.tsx) CODE_CHANGED=true ;;
+            README.md|AGENTS.md|.claude/CLAUDE.md) DOCS_CHANGED=true ;;
+          esac
+        done
+        if [ "$CODE_CHANGED" = true ] && [ "$DOCS_CHANGED" = false ]; then
+          echo ""
+          echo "⚠️  WARNING: Source code changed but no documentation updated."
+          echo "   Consider updating: README.md, AGENTS.md, .claude/CLAUDE.md"
+          echo ""
+        fi
+
+commit-msg:
+  jobs:
+    - name: gitmoji-conventional
+      run: |
+        MSG=$(head -1 {1})
+        TYPES="feat|fix|refactor|style|docs|chore|test|perf|ci|build|revert"
+        if ! echo "$MSG" | grep -qE "^[^a-zA-Z0-9].+ ($TYPES): .+"; then
+          echo ""
+          echo "❌ Commit must match: <emoji> <type>: <description>"
+          echo "   Types: feat, fix, refactor, style, docs, chore, test, perf, ci, build, revert"
+          echo "   Examples:"
+          echo "     ✨ feat: add orb drift animation"
+          echo "     🐛 fix: correct HSL conversion edge case"
+          echo "     🔧 chore: update biome config"
+          echo "   Got: $MSG"
+          echo ""
+          exit 1
+        fi
