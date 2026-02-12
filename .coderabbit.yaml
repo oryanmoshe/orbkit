@@ -109,15 +109,11 @@ reviews:
       threshold: 80
     custom_checks:
       - name: "No console.log"
-        pattern: "console\\.(log|debug|info)"
-        message: "Remove console statements before merging"
-        instructions: "Flag any console.log, console.debug, or console.info statements in production code"
-        level: "warning"
+        instructions: "Flag any console.log, console.debug, or console.info statements in production code. These must be removed before merging."
+        mode: "warning"
       - name: "No focused tests"
-        pattern: "(describe|it|test)\\.only"
-        message: "Remove .only from tests before merging"
-        instructions: "Flag any .only() calls on describe, it, or test blocks that would skip other tests"
-        level: "error"
+        instructions: "Flag any .only() calls on describe, it, or test blocks that would skip other tests. These must be removed before merging."
+        mode: "error"
 
   enable_prompt_for_ai_agents: true
 
@@ -128,8 +124,7 @@ reviews:
       enabled: false
     gitleaks:
       enabled: true
-    ast-grep:
-      enabled: true
+    ast-grep: {}
     semgrep:
       enabled: true
     markdownlint:
