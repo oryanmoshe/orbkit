@@ -105,10 +105,12 @@ reviews:
       - name: "No console.log"
         pattern: "console\\.(log|debug|info)"
         message: "Remove console statements before merging"
+        instructions: "Flag any console.log, console.debug, or console.info statements in production code"
         level: "warning"
       - name: "No focused tests"
         pattern: "(describe|it|test)\\.only"
         message: "Remove .only from tests before merging"
+        instructions: "Flag any .only() calls on describe, it, or test blocks that would skip other tests"
         level: "error"
 
   enable_prompt_for_ai_agents: true

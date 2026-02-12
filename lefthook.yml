@@ -31,7 +31,7 @@ commit-msg:
       run: |
         MSG=$(head -1 {1})
         TYPES="feat|fix|refactor|style|docs|chore|test|perf|ci|build|revert"
-        if ! echo "$MSG" | grep -qE " ($TYPES): .+" || echo "$MSG" | grep -qE "^[a-zA-Z0-9]"; then
+        if ! echo "$MSG" | grep -qE "^[^[:alnum:][:space:]]+ ($TYPES): .+"; then
           echo ""
           echo "❌ Commit must match: <emoji> <type>: <description>"
           echo "   Types: feat, fix, refactor, style, docs, chore, test, perf, ci, build, revert"
