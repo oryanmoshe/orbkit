@@ -45,6 +45,12 @@ reviews:
     - "**/*.config.{ts,js}"
     - "**/tsconfig.json"
     - "**/biome.json"
+    - "**/*.yml"
+    - "**/*.yaml"
+    - "**/*.json"
+    - "**/*.md"
+    - ".gitignore"
+    - ".github/**"
     - "!**/dist/**"
     - "!**/node_modules/**"
     - "!bun.lock"
@@ -115,35 +121,33 @@ reviews:
 
   enable_prompt_for_ai_agents: true
 
-tools:
-  biome:
-    enabled: true
-  eslint:
-    enabled: false
-  gitleaks:
-    enabled: true
-  ast-grep:
-    enabled: true
-  semgrep:
-    enabled: true
-  markdownlint:
-    enabled: true
-  yamllint:
-    enabled: true
-
-  # Disabled — not relevant
-  ruff:
-    enabled: false
-  pylint:
-    enabled: false
-  rubocop:
-    enabled: false
-  golangci-lint:
-    enabled: false
-  clippy:
-    enabled: false
-  swiftlint:
-    enabled: false
+  tools:
+    biome:
+      enabled: true
+    eslint:
+      enabled: false
+    gitleaks:
+      enabled: true
+    ast-grep:
+      enabled: true
+    semgrep:
+      enabled: true
+    markdownlint:
+      enabled: true
+    yamllint:
+      enabled: true
+    ruff:
+      enabled: false
+    pylint:
+      enabled: false
+    rubocop:
+      enabled: false
+    golangci-lint:
+      enabled: false
+    clippy:
+      enabled: false
+    swiftlint:
+      enabled: false
 
 knowledge_base:
   opt_out: false
