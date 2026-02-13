@@ -132,7 +132,7 @@ export function Orb({
 
   const wavyEnabled = wavy === true || (typeof wavy === 'object' && wavy !== null);
   const wavyConfig: WavyConfig = typeof wavy === 'object' && wavy !== null ? wavy : {};
-  const wavySpeed = wavyConfig.speed ?? 1;
+  const wavySpeed = Math.max(wavyConfig.speed ?? 1, 0.1);
 
   // Blob morph keyframe injection
   const [blobAnimProps, setBlobAnimProps] = useState<{
@@ -161,9 +161,13 @@ export function Orb({
   const interactiveEnabled = interactive === true;
   const intensity = 35;
 
+  const interactiveTransform = interactiveEnabled
+    ? `translate(calc((var(--orbkit-mx, 0.5) - ${px}) * ${intensity}%), calc((var(--orbkit-my, 0.5) - ${py}) * ${intensity}%))`
+    : '';
+
   const interactiveStyle = interactiveEnabled
     ? {
-        transform: `translate(calc((var(--orbkit-mx, 0.5) - ${px}) * ${intensity}%), calc((var(--orbkit-my, 0.5) - ${py}) * ${intensity}%))`,
+        transform: interactiveTransform,
         transition: 'transform 0.2s ease-out',
         willChange: 'transform' as const,
       }
@@ -187,19 +191,25 @@ export function Orb({
   // When wavy (blob mode): positioned element with border-radius morph + centered gradient
   if (wavyEnabled) {
     const blobDiameter = `${size * 150}%`;
+    // Compose centering + interactive transforms so parallax doesn't overwrite centering
+    const blobTransform = interactiveEnabled
+      ? `translate(-50%, -50%) ${interactiveTransform}`
+      : 'translate(-50%, -50%)';
+
     const blobStyle = {
       position: 'absolute' as const,
       width: blobDiameter,
       height: blobDiameter,
       left: `${px * 100}%`,
       top: `${py * 100}%`,
-      transform: 'translate(-50%, -50%)',
+      transform: blobTransform,
       background: `radial-gradient(circle, ${color} 0%, ${color}cc 30%, ${color}44 60%, transparent 70%)`,
       filter: `blur(${blur}px)`,
       mixBlendMode: blendMode,
       borderRadius: '50%', // Initial circle, animation overrides this
+      transition: interactiveEnabled ? 'transform 0.2s ease-out' : undefined,
+      willChange: interactiveEnabled ? ('transform' as const) : undefined,
       ...blobAnimStyle,
-      ...interactiveStyle,
       ...style,
     };
 
@@ -229,8 +239,14 @@ export function Orb({
               filter: blobStyle.filter,
               mixBlendMode: blobStyle.mixBlendMode,
               borderRadius: '50%',
+              ...(interactiveEnabled
+                ? {
+                    transform: interactiveTransform,
+                    transition: 'transform 0.2s ease-out',
+                    willChange: 'transform' as const,
+                  }
+                : {}),
               ...blobAnimStyle,
-              ...interactiveStyle,
               ...style,
             }}
           />

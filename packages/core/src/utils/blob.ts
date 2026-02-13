@@ -24,7 +24,7 @@ export function generateBlobMorphKeyframes(
   speed: number,
 ): { animationName: string; keyframeCSS: string; duration: number } {
   const rand = seededRandom(seed + 1);
-  const name = `orbkit-blob-${seed}`;
+  const name = `orbkit-blob-${Math.abs(Math.floor(seed))}`;
   const safeSpeed = speed > 0 ? speed : 1;
   const duration = 8 / safeSpeed;
 

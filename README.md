@@ -81,7 +81,7 @@ OrbKit supports three rendering backends. Use `renderer="auto"` to auto-detect t
 | **Edge distortion** | CSS `border-radius` blob morph | — | Simplex noise 3D + FBM |
 | **Blend modes** | CSS `mix-blend-mode` | Canvas `globalCompositeOperation` | GLSL blend functions |
 | **Anti-banding** | — | — | Jimenez gradient noise dither |
-| **Grain** | Separate `<canvas>` overlay | Same canvas (offscreen composit) | Same shader pass |
+| **Grain** | Separate `<canvas>` overlay | Same canvas (offscreen composite) | Same shader pass |
 | **Best for** | SSR, simple scenes, broad compat | Medium scenes, no WebGL available | High-quality visuals, many orbs |
 
 #### Feature Compatibility Matrix
