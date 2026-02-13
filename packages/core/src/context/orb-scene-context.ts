@@ -1,4 +1,4 @@
-import { type RefObject, createContext, useCallback, useContext, useRef } from 'react';
+import { type RefObject, createContext, useCallback, useContext, useMemo, useRef } from 'react';
 import type { OrbRenderConfig, OrbRenderer, OrbSceneContextValue, RendererType } from '../types';
 
 const OrbSceneContext = createContext<OrbSceneContextValue | null>(null);
@@ -18,7 +18,14 @@ export function useOrbSceneContext(): OrbSceneContextValue | null {
  * Hook used inside OrbScene to create the context value with a stable
  * monotonic orb index counter and orb config registration for imperative renderers.
  */
-export function useOrbSceneProvider(values: {
+export function useOrbSceneProvider({
+  background,
+  grain,
+  breathing,
+  renderer,
+  saturation,
+  containerRef,
+}: {
   background: string;
   grain: number;
   breathing: number;
@@ -60,12 +67,30 @@ export function useOrbSceneProvider(values: {
     [syncToRenderer],
   );
 
-  return {
-    ...values,
-    registerOrb,
-    registerOrbConfig,
-    unregisterOrbConfig,
-    imperativeRendererRef,
-    orbConfigsRef,
-  };
+  return useMemo(
+    () => ({
+      background,
+      grain,
+      breathing,
+      renderer,
+      saturation,
+      containerRef,
+      registerOrb,
+      registerOrbConfig,
+      unregisterOrbConfig,
+      imperativeRendererRef,
+      orbConfigsRef,
+    }),
+    [
+      background,
+      grain,
+      breathing,
+      renderer,
+      saturation,
+      containerRef,
+      registerOrb,
+      registerOrbConfig,
+      unregisterOrbConfig,
+    ],
+  );
 }
