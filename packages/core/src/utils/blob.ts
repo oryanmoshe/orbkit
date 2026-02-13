@@ -1,8 +1,9 @@
-/** Deterministic pseudo-random number from a seed */
+/** Deterministic pseudo-random number from a seed (MINSTD LCG: s(n+1) = s(n) * 16807 mod 2^31-1) */
 function seededRandom(seed: number): () => number {
-  let s = seed;
+  let s = Number.isFinite(seed) ? Math.floor(seed) : 1;
+  if (s <= 0) s = 1;
   return () => {
-    s = (s * 16807 + 0) % 2147483647;
+    s = (s * 16807) % 2147483647;
     return (s - 1) / 2147483646;
   };
 }

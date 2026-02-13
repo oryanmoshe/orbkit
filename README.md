@@ -118,14 +118,14 @@ OrbKit supports three rendering backends. Use `renderer="auto"` to auto-detect t
 - Weaknesses: No SSR, max 8 orbs, grain looks terrible, blur/blend modes/interactive not visually verified, largest code footprint
 
 ```tsx
-// Auto-detect best renderer (WebGL > Canvas > CSS)
+// Auto-detect (currently returns CSS — Canvas/WebGL are experimental)
 <OrbScene renderer="auto" preset="ocean" />
 
 // Force a specific renderer
 <OrbScene renderer="webgl" preset="ocean" />
 ```
 
-**Auto-detection order:** WebGL 2 → WebGL 1 → Canvas 2D → CSS. The result is cached after the first browser probe. SSR always returns CSS.
+**Auto-detection:** Currently returns CSS (the most feature-complete renderer). Canvas and WebGL are experimental and must be explicitly opted into. SSR always returns CSS. The result is cached after the first browser call.
 
 ### Presets
 

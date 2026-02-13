@@ -8,6 +8,8 @@ jobs:
   assignee:
     name: Require Issue Assignee
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
       - name: Check issue has assignee
         env:
