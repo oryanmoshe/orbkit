@@ -96,6 +96,7 @@ describe('WebGL renderer utilities', () => {
           blendMode: 'screen' as const,
           drift: false,
           wavy: false,
+          interactive: false,
         })),
       );
 

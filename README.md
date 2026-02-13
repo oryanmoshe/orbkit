@@ -27,7 +27,7 @@ import { OrbScene, Orb } from 'orbkit';
 - **Composable** — `<OrbScene>` + `<Orb>` children, or use presets for quick setup
 - **5 built-in presets** — Ocean, Sunset, Forest, Aurora, Minimal + custom presets via `registerPreset()`
 - **Drift animation** — Deterministic orbital motion with configurable speed
-- **Wavy edges** — SVG feTurbulence filter for organic, fluid orb edges
+- **Wavy edges** — Blob morph animation (CSS) / simplex noise (WebGL) for organic shapes
 - **Per-orb effects** — Individual blur, blend mode, waviness, drift per orb
 - **Scene context** — Orbs inherit scene settings (breathing, renderer, saturation) automatically
 - **Auto grain overlay** — Noise texture injected when grain > 0
@@ -49,7 +49,7 @@ Container and compositor for Orb components.
 | `background` | `string` | `#000000` | Background color |
 | `grain` | `number` | `0` | Noise overlay intensity (0-1) |
 | `breathing` | `number` | `0` | Global animation intensity (0-100) |
-| `renderer` | `'css' \| 'canvas' \| 'webgl'` | `'css'` | Rendering backend |
+| `renderer` | `'css' \| 'canvas' \| 'webgl' \| 'auto'` | `'css'` | Rendering backend |
 | `as` | `string` | `'div'` | HTML element to render as |
 | `className` | `string` | — | Custom CSS class |
 | `style` | `CSSProperties` | — | Inline styles |
@@ -68,6 +68,64 @@ Individual animated orb primitive.
 | `drift` | `boolean \| DriftConfig` | — | Enable orbital drift animation |
 | `wavy` | `boolean \| WavyConfig` | — | Enable organic edge distortion |
 | `interactive` | `boolean` | — | Enable mouse hover parallax effect |
+
+### Renderers
+
+OrbKit supports three rendering backends. Use `renderer="auto"` to auto-detect the best one, or pick one explicitly.
+
+| | CSS | Canvas 2D | WebGL |
+|---|---|---|---|
+| **How it works** | `<div>` per orb with `radial-gradient` + CSS `@keyframes` | Single `<canvas>`, `requestAnimationFrame` loop | Single `<canvas>`, GLSL fragment shader |
+| **SSR** | Yes | No | No |
+| **Max orbs** | Unlimited | Unlimited | 8 |
+| **Edge distortion** | CSS `border-radius` blob morph | — | Simplex noise 3D + FBM |
+| **Blend modes** | CSS `mix-blend-mode` | Canvas `globalCompositeOperation` | GLSL blend functions |
+| **Anti-banding** | — | — | Jimenez gradient noise dither |
+| **Grain** | Separate `<canvas>` overlay | Same canvas (offscreen composite) | Same shader pass |
+| **Best for** | SSR, simple scenes, broad compat | Medium scenes, no WebGL available | High-quality visuals, many orbs |
+
+#### Feature Compatibility Matrix
+
+> **Warning:** This project is a work in progress. Many features are untested or visually broken across renderers. The CSS renderer is the most mature but still has issues. See individual notes below.
+
+| Feature | CSS | Canvas 2D | WebGL | Issue |
+|---------|:---:|:---------:|:-----:|-------|
+| Basic orb rendering | :white_check_mark: | :white_check_mark: | :white_check_mark: | |
+| Blur | :white_check_mark: | :warning: | :warning: | [#28](https://github.com/oryanmoshe/orbkit/issues/28) — Canvas/WebGL blur looks different from CSS |
+| Blend modes | :warning: | :warning: | :warning: | [#29](https://github.com/oryanmoshe/orbkit/issues/29) — Not visually verified on any renderer |
+| Drift animation | :warning: | :warning: | :warning: | [#30](https://github.com/oryanmoshe/orbkit/issues/30) — Barely visible, too subtle |
+| Grain overlay | :white_check_mark: | :warning: | :x: | [#31](https://github.com/oryanmoshe/orbkit/issues/31) — WebGL looks terrible, Canvas untested |
+| Interactive parallax | :white_check_mark: | :warning: | :warning: | [#32](https://github.com/oryanmoshe/orbkit/issues/32) — Canvas/WebGL not verified |
+| Wavy/blob edges | :warning: | :x: | :warning: | [#27](https://github.com/oryanmoshe/orbkit/issues/27) — Doesn't look like bubbles |
+| SSR | :warning: | :x: | :x: | [#33](https://github.com/oryanmoshe/orbkit/issues/33) — Never tested in real SSR |
+| Presets | :white_check_mark: | :white_check_mark: | :white_check_mark: | |
+
+**Legend:** :white_check_mark: Working and verified | :warning: Implemented but broken, untested, or poor quality | :x: Not implemented
+
+#### Renderer Strengths & Weaknesses
+
+**CSS** (default, most stable)
+- Strengths: Most feature-complete, SSR-designed, no canvas overhead, supports `className`/`style` props on orbs
+- Weaknesses: Multiple DOM elements (one per orb), wavy blob morph needs visual polish, drift is very subtle
+- Known issues: Wavy doesn't look like real bubbles ([#27](https://github.com/oryanmoshe/orbkit/issues/27))
+
+**Canvas 2D** (experimental)
+- Strengths: Single DOM element, frame-based animation
+- Weaknesses: No SSR, no wavy support, blur looks different from CSS, interactive/blend modes not visually verified, grain untested
+
+**WebGL** (experimental)
+- Strengths: GPU-accelerated, simplex noise edge distortion, anti-banding dither
+- Weaknesses: No SSR, max 8 orbs, grain looks terrible, blur/blend modes/interactive not visually verified, largest code footprint
+
+```tsx
+// Auto-detect (currently returns CSS — Canvas/WebGL are experimental)
+<OrbScene renderer="auto" preset="ocean" />
+
+// Force a specific renderer
+<OrbScene renderer="webgl" preset="ocean" />
+```
+
+**Auto-detection:** Currently returns CSS (the most feature-complete renderer). Canvas and WebGL are experimental and must be explicitly opted into. SSR always returns CSS. The result is cached after the first browser call.
 
 ### Presets
 

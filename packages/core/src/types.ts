@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode, RefObject } from 'react';
+import type { CSSProperties, MutableRefObject, ReactNode, RefObject } from 'react';
 
 /** Normalized 2D point [x, y] where both values are 0-1 */
 export type Point = [x: number, y: number];
@@ -76,8 +76,8 @@ export interface OrbSceneProps {
   breathing?: number;
   /** Named preset to use */
   preset?: string;
-  /** Default renderer for all children */
-  renderer?: RendererType;
+  /** Renderer: 'css' (default), 'canvas', 'webgl', or 'auto' (detect best) */
+  renderer?: RendererType | 'auto';
   /** Custom CSS class */
   className?: string;
   /** Inline styles */
@@ -135,6 +135,14 @@ export interface OrbSceneContextValue {
   registerOrb: () => number;
   /** Ref to the scene container element for pointer tracking */
   containerRef: RefObject<HTMLElement | null>;
+  /** @internal Register an orb config for imperative (Canvas/WebGL) rendering */
+  registerOrbConfig: (id: string, config: OrbRenderConfig) => void;
+  /** @internal Unregister an orb config when it unmounts */
+  unregisterOrbConfig: (id: string) => void;
+  /** @internal Ref to the imperative renderer instance (set by ImperativeScene) */
+  imperativeRendererRef: MutableRefObject<OrbRenderer | null>;
+  /** @internal Ref to the map of registered orb configs */
+  orbConfigsRef: MutableRefObject<Map<string, OrbRenderConfig>>;
 }
 
 /** Orbit parameters for drift animation */
@@ -155,6 +163,7 @@ export interface OrbRenderConfig {
   blendMode: BlendMode;
   drift: boolean | DriftConfig;
   wavy: boolean | WavyConfig;
+  interactive: boolean;
 }
 
 /** Common interface for all rendering backends (CSS, Canvas, WebGL) */
@@ -171,6 +180,8 @@ export interface OrbRenderer {
   setBackground(color: string): void;
   /** Set the grain noise overlay intensity (0-1) */
   setGrain(intensity: number): void;
+  /** Update pointer position for interactive parallax (normalized 0-1) */
+  setPointerPosition(x: number, y: number): void;
   /** Resize the rendering surface to new dimensions */
   resize(width: number, height: number): void;
   /** Start the render loop */

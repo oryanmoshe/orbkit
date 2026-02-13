@@ -8,20 +8,26 @@ interface WavyFilterProps {
   config: WavyConfig;
   /** Seed for deterministic noise variation */
   seed: number;
+  /** Blur value in px — displacement scales up to remain visible through blur */
+  blur?: number;
 }
 
 /**
  * WavyFilter — Inline SVG filter that applies organic edge distortion to an orb.
  *
  * Uses feTurbulence (Perlin noise) + feDisplacementMap to warp the orb's edges.
- * Animation is handled via SVG <animate> — declarative, no JS, GPU-accelerated.
+ * The displacement scale increases with blur so wavy edges remain visible even
+ * when heavy blur is applied. Animation is via SVG <animate> — no JS, GPU-accelerated.
  */
-export function WavyFilter({ filterId, config, seed }: WavyFilterProps): JSX.Element {
-  const scale = config.scale ?? 30;
+export function WavyFilter({ filterId, config, seed, blur = 0 }: WavyFilterProps): JSX.Element {
+  const userScale = config.scale ?? 30;
   const speed = config.speed ?? 1;
-  const octaves = Math.min(Math.max(Math.round(config.intensity ?? 3), 1), 6);
+  const octaves = Math.min(Math.max(Math.round(config.intensity ?? 2), 1), 6);
 
-  const baseFrequency = 0.01 + scale * 0.0005;
+  // Frequency based on user scale — lower = smoother, more bubble-like undulations
+  const baseFrequency = 0.008 + userScale * 0.0003;
+  // Displacement increases with blur so wavy edges survive the smoothing
+  const displacementScale = userScale + Math.max(0, blur) * 2;
   const safeSpeed = speed > 0 ? speed : 1;
   const duration = 8 / safeSpeed;
 
@@ -50,7 +56,7 @@ export function WavyFilter({ filterId, config, seed }: WavyFilterProps): JSX.Ele
           <feDisplacementMap
             in="SourceGraphic"
             in2="noise"
-            scale={scale}
+            scale={displacementScale}
             xChannelSelector="R"
             yChannelSelector="G"
           />

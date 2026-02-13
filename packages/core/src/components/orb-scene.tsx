@@ -1,8 +1,10 @@
-import { type JSX, createElement, useEffect, useRef } from 'react';
+import { type JSX, createElement, useEffect, useRef, useState } from 'react';
 import { OrbSceneContext, useOrbSceneProvider } from '../context';
 import { presets } from '../presets';
-import type { OrbSceneProps } from '../types';
+import { detectBestRenderer } from '../renderers/detect';
+import type { OrbSceneProps, RendererType } from '../types';
 import { Grain } from './grain';
+import { ImperativeScene } from './imperative-scene';
 import { Orb } from './orb';
 
 /**
@@ -11,8 +13,15 @@ import { Orb } from './orb';
  * Provides scene context (background, grain, breathing, renderer)
  * that child Orb components inherit from. When a `preset` is given,
  * auto-renders the preset's orbs with drift enabled. Auto-injects
- * a Grain overlay when grain > 0. Tracks pointer position for
+ * a Grain overlay when grain > 0 (CSS renderer only — imperative
+ * renderers handle grain internally). Tracks pointer position for
  * interactive orbs via CSS custom properties.
+ *
+ * Renderer selection:
+ * - `'css'` (default): orbs are `<div>` elements with CSS gradients/animations
+ * - `'canvas'`: all orbs drawn on a single `<canvas>` via Canvas 2D API
+ * - `'webgl'`: all orbs rendered via WebGL fragment shader
+ * - `'auto'`: auto-detect best renderer (WebGL > Canvas > CSS)
  */
 export function OrbScene({
   background,
@@ -25,6 +34,20 @@ export function OrbScene({
   as = 'div',
   children,
 }: OrbSceneProps): JSX.Element {
+  // Resolve 'auto' — defer detection to useEffect to avoid SSR/CSR hydration mismatch.
+  // SSR and initial client render both use 'css', then useEffect switches to the detected renderer.
+  const [resolvedRenderer, setResolvedRenderer] = useState<RendererType>(
+    renderer === 'auto' ? 'css' : renderer,
+  );
+
+  useEffect(() => {
+    if (renderer === 'auto') {
+      setResolvedRenderer(detectBestRenderer());
+    } else {
+      setResolvedRenderer(renderer);
+    }
+  }, [renderer]);
+
   // Resolve preset
   const presetData = preset ? presets[preset] : null;
 
@@ -39,12 +62,13 @@ export function OrbScene({
     background: resolvedBackground,
     grain: resolvedGrain,
     breathing: resolvedBreathing,
-    renderer,
+    renderer: resolvedRenderer,
     saturation: resolvedSaturation,
     containerRef,
   });
 
   // Scene-level pointer tracking — sets CSS custom properties for interactive orbs
+  const imperativeRendererRef = contextValue.imperativeRendererRef;
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -57,8 +81,11 @@ export function OrbScene({
         const rect = container.getBoundingClientRect();
         const mx = (e.clientX - rect.left) / rect.width;
         const my = (e.clientY - rect.top) / rect.height;
+        // CSS renderer: update custom properties
         container.style.setProperty('--orbkit-mx', String(mx));
         container.style.setProperty('--orbkit-my', String(my));
+        // Imperative renderers: update pointer position directly
+        imperativeRendererRef.current?.setPointerPosition(mx, my);
         rafId = null;
       });
     };
@@ -70,6 +97,8 @@ export function OrbScene({
       }
       container.style.setProperty('--orbkit-mx', '0.5');
       container.style.setProperty('--orbkit-my', '0.5');
+      // Reset imperative renderer pointer to center
+      imperativeRendererRef.current?.setPointerPosition(0.5, 0.5);
     };
 
     container.addEventListener('pointermove', handlePointerMove);
@@ -80,7 +109,7 @@ export function OrbScene({
       container.removeEventListener('pointerleave', handlePointerLeave);
       if (rafId) cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [imperativeRendererRef]);
 
   // Auto-generate orbs from preset
   const presetOrbs = presetData?.points.map((point, index) => (
@@ -99,6 +128,8 @@ export function OrbScene({
     containerRef.current = el;
   };
 
+  const isImperative = resolvedRenderer !== 'css';
+
   return (
     <OrbSceneContext.Provider value={contextValue}>
       {createElement(
@@ -115,9 +146,14 @@ export function OrbScene({
             ...style,
           },
         },
+        // Imperative renderer canvas (rendered first so its effect fires before Orb effects)
+        isImperative ? (
+          <ImperativeScene rendererType={resolvedRenderer as 'canvas' | 'webgl'} />
+        ) : null,
         presetOrbs,
         children,
-        resolvedGrain > 0 ? <Grain intensity={resolvedGrain} /> : null,
+        // CSS renderer handles grain via Grain overlay; imperative renderers handle it internally
+        !isImperative && resolvedGrain > 0 ? <Grain intensity={resolvedGrain} /> : null,
       )}
     </OrbSceneContext.Provider>
   );

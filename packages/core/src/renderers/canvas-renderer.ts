@@ -44,6 +44,8 @@ export function createCanvasRenderer(): OrbRenderer {
   let grainIntensity = 0;
   let cachedGrainCanvas: HTMLCanvasElement | null = null;
   let running = false;
+  let pointerX = 0.5;
+  let pointerY = 0.5;
 
   function render(time: number) {
     if (!ctx || !canvas) return;
@@ -57,6 +59,7 @@ export function createCanvasRenderer(): OrbRenderer {
     ctx.fillRect(0, 0, w, h);
 
     // Orbs
+    const dpr = typeof devicePixelRatio !== 'undefined' ? devicePixelRatio : 1;
     for (const orb of orbs) {
       ctx.globalCompositeOperation = BLEND_MODE_MAP[orb.blendMode] ?? 'source-over';
       ctx.save();
@@ -66,21 +69,34 @@ export function createCanvasRenderer(): OrbRenderer {
         orb.drift === true || (typeof orb.drift === 'object' && orb.drift !== null);
       const offset = driftEnabled ? calculateDriftOffset(orb.orbitParams, time) : ZERO_OFFSET;
 
-      const cx = (orb.position[0] + offset.x) * w;
-      const cy = (orb.position[1] + offset.y) * h;
+      // Interactive parallax offset
+      const interactiveIntensity = 0.35;
+      const ix = orb.interactive ? (pointerX - orb.position[0]) * interactiveIntensity : 0;
+      const iy = orb.interactive ? (pointerY - orb.position[1]) * interactiveIntensity : 0;
+
+      const cx = (orb.position[0] + offset.x + ix) * w;
+      const cy = (orb.position[1] + offset.y + iy) * h;
       const radius = orb.size * Math.max(w, h) * 0.65;
 
-      // Radial gradient
+      // Gaussian blur — matches CSS filter: blur() for smooth orb edges & merging
+      const blurPx = orb.blur * dpr;
+      if (blurPx > 0) {
+        ctx.filter = `blur(${blurPx}px)`;
+      }
+
+      // Radial gradient — soft falloff so blur has material to spread
       const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
       gradient.addColorStop(0, orb.rgbaColor);
-      gradient.addColorStop(0.7, orb.rgbaColorTransparent);
+      gradient.addColorStop(0.5, orb.rgbaColor);
+      gradient.addColorStop(0.85, orb.rgbaColorTransparent);
       gradient.addColorStop(1, 'transparent');
 
+      // Fill a padded rect (not arc) so blur can spread beyond the gradient edge
+      const pad = blurPx * 3;
       ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.fillRect(cx - radius - pad, cy - radius - pad, (radius + pad) * 2, (radius + pad) * 2);
 
+      ctx.filter = 'none';
       ctx.restore();
     }
 
@@ -143,6 +159,11 @@ export function createCanvasRenderer(): OrbRenderer {
     setGrain(intensity: number) {
       grainIntensity = intensity;
       cachedGrainCanvas = null; // invalidate cache when intensity changes
+    },
+
+    setPointerPosition(x: number, y: number) {
+      pointerX = x;
+      pointerY = y;
     },
 
     resize(width: number, height: number) {

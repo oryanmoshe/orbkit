@@ -3,104 +3,94 @@ import { renderToString } from 'react-dom/server';
 import { Orb } from './orb';
 import { OrbScene } from './orb-scene';
 
-describe('WavyFilter', () => {
-  it('renders SVG filter when wavy is true', () => {
+describe('Wavy (Blob Morph)', () => {
+  it('renders blob div when wavy is true', () => {
     const html = renderToString(
       <OrbScene>
         <Orb color="#FF0000" wavy />
       </OrbScene>,
     );
-    expect(html).toContain('feTurbulence');
-    expect(html).toContain('feDisplacementMap');
-    expect(html).toContain('orbkit-wavy-');
+    expect(html).toContain('orbkit-orb-blob');
+    expect(html).toContain('radial-gradient(circle');
+    expect(html).toContain('border-radius:50%');
   });
 
-  it('does not render SVG filter when wavy is false', () => {
+  it('does not render blob div when wavy is false', () => {
     const html = renderToString(
       <OrbScene>
         <Orb color="#FF0000" wavy={false} />
       </OrbScene>,
     );
-    expect(html).not.toContain('feTurbulence');
-    expect(html).not.toContain('feDisplacementMap');
+    expect(html).not.toContain('orbkit-orb-blob');
   });
 
-  it('does not render SVG filter when wavy is omitted', () => {
+  it('does not render blob div when wavy is omitted', () => {
     const html = renderToString(
       <OrbScene>
         <Orb color="#FF0000" />
       </OrbScene>,
     );
-    expect(html).not.toContain('feTurbulence');
+    expect(html).not.toContain('orbkit-orb-blob');
   });
 
-  it('applies wavy config scale to displacement', () => {
+  it('renders positioned blob with centered gradient', () => {
     const html = renderToString(
       <OrbScene>
-        <Orb color="#FF0000" wavy={{ scale: 50 }} />
+        <Orb color="#FF0000" wavy position={[0.3, 0.7]} />
       </OrbScene>,
     );
-    // scale=50 → displacement scale attribute should be 50
-    expect(html).toContain('scale="50"');
+    expect(html).toContain('left:30%');
+    expect(html).toContain('top:70%');
+    expect(html).toContain('translate(-50%, -50%)');
   });
 
-  it('applies wavy config speed to animation duration', () => {
+  it('applies blur to blob', () => {
     const html = renderToString(
       <OrbScene>
-        <Orb color="#FF0000" wavy={{ speed: 2 }} />
+        <Orb color="#FF0000" wavy blur={25} />
       </OrbScene>,
     );
-    // speed=2 → duration = 8/2 = 4s
-    expect(html).toContain('dur="4s"');
+    expect(html).toContain('blur(25px)');
   });
 
-  it('applies wavy config intensity to octaves', () => {
+  it('applies blend mode to blob', () => {
     const html = renderToString(
       <OrbScene>
-        <Orb color="#FF0000" wavy={{ intensity: 5 }} />
+        <Orb color="#FF0000" wavy blendMode="overlay" />
       </OrbScene>,
     );
-    expect(html).toContain('numOctaves="5"');
+    expect(html).toContain('overlay');
   });
 
-  it('clamps octaves between 1 and 6', () => {
-    const htmlHigh = renderToString(
-      <OrbScene>
-        <Orb color="#FF0000" wavy={{ intensity: 10 }} />
-      </OrbScene>,
-    );
-    expect(htmlHigh).toContain('numOctaves="6"');
-
-    const htmlLow = renderToString(
-      <OrbScene>
-        <Orb color="#FF0000" wavy={{ intensity: 0 }} />
-      </OrbScene>,
-    );
-    expect(htmlLow).toContain('numOctaves="1"');
-  });
-
-  it('generates unique filter IDs per orb', () => {
+  it('renders multiple wavy orbs independently', () => {
     const html = renderToString(
       <OrbScene>
         <Orb color="#FF0000" wavy />
         <Orb color="#00FF00" wavy />
       </OrbScene>,
     );
-    // Extract all orbkit-wavy-* filter IDs
-    const ids = html.match(/orbkit-wavy-[^"]+/g) ?? [];
-    const uniqueIds = new Set(ids);
-    // Should have at least 2 unique IDs (one per wavy orb)
-    expect(uniqueIds.size).toBeGreaterThanOrEqual(2);
+    const blobCount = (html.match(/orbkit-orb-blob/g) ?? []).length;
+    expect(blobCount).toBeGreaterThanOrEqual(2);
   });
 
-  it('combines wavy filter with blur in filter CSS', () => {
+  it('non-wavy orbs use full-bleed gradient approach', () => {
     const html = renderToString(
       <OrbScene>
-        <Orb color="#FF0000" wavy blur={50} />
+        <Orb color="#FF0000" />
       </OrbScene>,
     );
-    // Should have both url() reference and blur()
-    expect(html).toContain('url(#orbkit-wavy-');
-    expect(html).toContain('blur(50px)');
+    // Non-wavy uses radial-gradient with `at X% Y%` syntax
+    expect(html).toContain('radial-gradient(at');
+    expect(html).not.toContain('orbkit-orb-blob');
+  });
+
+  it('blob diameter scales with size prop', () => {
+    const html = renderToString(
+      <OrbScene>
+        <Orb color="#FF0000" wavy size={1.0} />
+      </OrbScene>,
+    );
+    // size=1.0 → blobDiameter = 1.0 * 150 = 150%
+    expect(html).toContain('150%');
   });
 });

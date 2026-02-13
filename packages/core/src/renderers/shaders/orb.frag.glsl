@@ -15,6 +15,7 @@ uniform vec2 u_orbPositions[8];
 uniform float u_orbSizes[8];
 uniform float u_orbBlurs[8];
 uniform int u_orbBlendModes[8];
+uniform int u_orbWavy[8];
 uniform float u_grainIntensity;
 uniform vec3 u_background;
 
@@ -178,12 +179,17 @@ void main() {
     diff.x *= aspect;
     float dist = length(diff);
 
-    // Noise distortion for organic edges
-    float noise = fbm(vec3(uv * 3.0, u_time * 0.3 + float(i)));
-    dist += noise * 0.08;
+    // Noise distortion for organic bubble-like edges (only when wavy is enabled)
+    if (u_orbWavy[i] == 1) {
+      // Low frequency noise for smooth, large undulations (bubble-like)
+      float noise = fbm(vec3(uv * 2.0, u_time * 0.25 + float(i)));
+      // Scale amplitude with blur so wavy edges remain visible through smoothing
+      float wavyAmplitude = 0.12 + orbBlur * 0.003;
+      dist += noise * wavyAmplitude;
+    }
 
-    // Soft radial falloff
-    float alpha = 1.0 - smoothstep(0.0, orbSize * (1.0 + orbBlur * 0.01), dist);
+    // Soft radial falloff — blur factor scaled to approximate CSS filter: blur()
+    float alpha = 1.0 - smoothstep(0.0, orbSize * (1.0 + orbBlur * 0.035), dist);
 
     // Blend orb color onto accumulated color
     vec3 orbContribution = u_orbColors[i] * alpha;

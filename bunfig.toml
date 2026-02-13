@@ -1,0 +1,3 @@
+[test]
+# Exclude e2e/ from bun test — Playwright tests run via `bun run test:e2e`
+root = "packages/"
