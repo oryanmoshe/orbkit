@@ -96,15 +96,45 @@ export default function Playground() {
 
 ### URL-Shareable Configs
 
-Encode the config in the URL hash for shareability:
+Encode the config in the URL hash for shareability. Uses URL-safe base64 encoding and
+wraps decoding in try/catch to handle corrupted or tampered URLs gracefully:
 
 ```typescript
-// Encode
-const hash = btoa(JSON.stringify(config));
+// --- Helpers: URL-safe base64 (handles non-ASCII via encodeURIComponent) ---
+
+function toBase64Url(str: string): string {
+  // Percent-encode to handle non-ASCII, then base64-encode, then make URL-safe
+  const base64 = btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, hex) =>
+    String.fromCharCode(parseInt(hex, 16)),
+  ));
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function fromBase64Url(str: string): string {
+  // Restore standard base64 chars and padding, then decode
+  const base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+  return decodeURIComponent(
+    Array.from(atob(padded), (c) => `%${c.charCodeAt(0).toString(16).padStart(2, '0')}`).join(''),
+  );
+}
+
+// --- Encode ---
+const hash = toBase64Url(JSON.stringify(config));
 window.location.hash = hash;
 
-// Decode
-const config = JSON.parse(atob(window.location.hash.slice(1)));
+// --- Decode (safe — falls back to default config on bad input) ---
+function loadConfigFromHash(defaultConfig: OrbConfig): OrbConfig {
+  const raw = window.location.hash.slice(1);
+  if (!raw) return defaultConfig;
+
+  try {
+    return JSON.parse(fromBase64Url(raw));
+  } catch {
+    console.warn('Failed to decode config from URL hash, using defaults');
+    return defaultConfig;
+  }
+}
 ```
 
 ## Component Examples in Docs

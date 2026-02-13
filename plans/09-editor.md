@@ -66,7 +66,7 @@ Based on DreamTeam.io source and modern design tool patterns:
 
 ## Component Architecture
 
-```
+```text
 @orbkit/editor
   src/
     index.ts                    — public exports

@@ -131,15 +131,15 @@ Canvas `filter: blur()` is expensive. Better approaches:
 Instead of CSS keyframes, calculate drift position per frame:
 
 ```typescript
-function calculateDriftOffset(orb: InternalOrb, time: number): Point {
+function calculateDriftOffset(orb: InternalOrb, time: number): { x: number; y: number } {
   const { amplitudeX, amplitudeY, duration, delay } = orb.orbitParams;
   const t = ((time / 1000 + delay) % duration) / duration;
   const angle = t * Math.PI * 2;
 
-  return [
-    Math.cos(angle) * amplitudeX / 100,
-    Math.sin(angle) * amplitudeY / 100,
-  ];
+  return {
+    x: Math.cos(angle) * amplitudeX / 100,
+    y: Math.sin(angle) * amplitudeY / 100,
+  };
 }
 ```
 

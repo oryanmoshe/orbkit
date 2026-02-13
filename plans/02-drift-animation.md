@@ -32,6 +32,7 @@ const injectedKeyframes = new Set<string>();
 
 export function injectKeyframes(name: string, css: string): void {
   if (injectedKeyframes.has(name)) return;
+  if (typeof document === 'undefined') return; // SSR guard
 
   const style = document.createElement('style');
   style.setAttribute('data-orbkit', name);
@@ -49,10 +50,21 @@ export function removeKeyframes(name: string): void {
 
 ### Orb Integration
 
+Animation variables (`animationName`, `duration`, `delay`) are computed inside `useEffect` but needed in the render scope for inline styles. Store them in state so the render has access:
+
 ```tsx
 // Inside <Orb> component
+const [animationProps, setAnimationProps] = useState<{
+  animationName: string;
+  duration: number;
+  delay: number;
+} | null>(null);
+
 useEffect(() => {
-  if (!drift) return;
+  if (!drift) {
+    setAnimationProps(null);
+    return;
+  }
 
   const { keyframeCSS, animationName, duration, delay } = generateOrbAnimation(
     { color, position, size },
@@ -61,17 +73,18 @@ useEffect(() => {
   );
 
   injectKeyframes(animationName, keyframeCSS);
+  setAnimationProps({ animationName, duration, delay });
 
   return () => removeKeyframes(animationName);
 }, [drift, position, breathing, orbIndex]);
 ```
 
-The animation is applied via inline style:
+The animation is applied via inline style using the stored state:
 
 ```typescript
-const animationStyle = drift ? {
-  animation: `${animationName} ${duration}s linear infinite`,
-  animationDelay: `${delay}s`,
+const animationStyle = animationProps ? {
+  animation: `${animationProps.animationName} ${animationProps.duration}s linear infinite`,
+  animationDelay: `${animationProps.delay}s`,
 } : {};
 ```
 

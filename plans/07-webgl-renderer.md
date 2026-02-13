@@ -54,12 +54,16 @@ Fragment Shader: For each pixel:
 ### Fragment Shader Design
 
 ```glsl
-precision highp float;
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+  precision highp float;
+#else
+  precision mediump float;
+#endif
 
 uniform vec2 u_resolution;
 uniform float u_time;
 uniform int u_orbCount;
-uniform vec3 u_orbColors[8];     // Max 8 orbs
+uniform vec3 u_orbColors[8];     // Max 8 orbs (clamped — see note below)
 uniform vec2 u_orbPositions[8];  // Normalized 0-1
 uniform float u_orbSizes[8];     // Normalized radius
 uniform float u_orbBlurs[8];     // Blur amount
@@ -129,6 +133,23 @@ void main() {
   color += (1.0 / 255.0) * gradientNoise(gl_FragCoord.xy + 0.5) - (0.5 / 255.0);
 
   gl_FragColor = vec4(color, 1.0);
+}
+```
+
+### Orb Count Clamping
+
+Uniform arrays are fixed at 8 elements. The host code **must** clamp `u_orbCount` to a maximum of 8 before uploading uniforms. If the consumer provides more than 8 orbs, only the first 8 are rendered and a console warning is emitted:
+
+```typescript
+const MAX_ORBS = 8;
+
+function setOrbs(orbs: OrbRenderConfig[]) {
+  if (orbs.length > MAX_ORBS) {
+    console.warn(`OrbKit: WebGL renderer supports a maximum of ${MAX_ORBS} orbs. Only the first ${MAX_ORBS} will be rendered.`);
+  }
+  const clamped = orbs.slice(0, MAX_ORBS);
+  gl.uniform1i(orbCountLocation, clamped.length);
+  // ... upload clamped orb uniforms
 }
 ```
 

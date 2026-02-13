@@ -124,6 +124,10 @@ function DataViz({ data }) {
 ### Implementation
 
 ```typescript
+// Monotonic counter for unique orb IDs — avoids collisions when
+// multiple orbs are added within the same millisecond.
+let nextOrbId = 0;
+
 export default function useOrbScene(options: UseOrbSceneOptions = {}): OrbSceneController {
   const [state, dispatch] = useReducer(orbSceneReducer, options, initState);
   const containerRef = useRef<HTMLElement | null>(null);
@@ -138,6 +142,29 @@ export default function useOrbScene(options: UseOrbSceneOptions = {}): OrbSceneC
     }
     containerRef.current = el;
   }, []);
+
+  // Handle renderer type changes: tear down the old renderer and create a new
+  // one on the existing container element. Separated from the ref callback so
+  // we don't need to re-run the callback (and remount the DOM node) on every
+  // renderer change.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    // If the renderer type hasn't changed, nothing to do
+    if (rendererRef.current?.type === state.renderer) return;
+
+    // Destroy the old renderer before creating the new one
+    rendererRef.current?.destroy();
+    const renderer = createRenderer(state.renderer, el);
+    rendererRef.current = renderer;
+    renderer.start();
+
+    return () => {
+      renderer.destroy();
+      rendererRef.current = null;
+    };
+  }, [state.renderer]);
 
   // Sync state to renderer
   useEffect(() => {
@@ -160,7 +187,7 @@ export default function useOrbScene(options: UseOrbSceneOptions = {}): OrbSceneC
     get breathing() { return state.breathing; },
 
     addOrb: (config) => {
-      const id = config.id ?? `orb-${Date.now()}`;
+      const id = config.id ?? `orb-${nextOrbId++}`;
       dispatch({ type: 'ADD_ORB', orb: { ...config, id } });
       return id;
     },

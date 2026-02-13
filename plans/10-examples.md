@@ -44,7 +44,8 @@ function App() {
         <p>Composable animated orb effects for React</p>
 
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          {Object.keys(presets).map(name => (
+          {/* Use Array.from since presets may be a Map (see plan 05) */}
+          {Array.from(presets.keys()).map(name => (
             <button key={name} onClick={() => setPreset(name)}>
               {name}
             </button>

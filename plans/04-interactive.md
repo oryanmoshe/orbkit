@@ -41,7 +41,7 @@ function useMouseParallax(
     const container = containerRef.current;
     if (!container) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
       const mouseX = (e.clientX - rect.left) / rect.width;   // 0-1
       const mouseY = (e.clientY - rect.top) / rect.height;   // 0-1
@@ -55,14 +55,14 @@ function useMouseParallax(
       });
     };
 
-    const handleMouseLeave = () => setOffset({ x: 0, y: 0 });
+    const handlePointerLeave = () => setOffset({ x: 0, y: 0 });
 
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('mouseleave', handleMouseLeave);
+    container.addEventListener('pointermove', handlePointerMove);
+    container.addEventListener('pointerleave', handlePointerLeave);
 
     return () => {
-      container.removeEventListener('mousemove', handleMouseMove);
-      container.removeEventListener('mouseleave', handleMouseLeave);
+      container.removeEventListener('pointermove', handlePointerMove);
+      container.removeEventListener('pointerleave', handlePointerLeave);
     };
   }, [containerRef, position, intensity]);
 
@@ -80,6 +80,30 @@ const interactiveTransform = interactive
 // Combined with drift animation
 style.transform = interactiveTransform;
 ```
+
+### Performance: Avoiding Per-Orb Re-renders
+
+The `useMouseParallax` hook above uses `useState` to store the offset, which triggers a React re-render on every pointer move for each interactive orb. With multiple orbs, this creates N re-renders per frame.
+
+**Optimization for v1 or later:** Use a single scene-level `pointermove` listener with `requestAnimationFrame` batching. Instead of `setState`, write offsets directly to DOM via refs or CSS custom properties:
+
+```typescript
+// Scene-level: single listener, no React re-renders
+const handlePointerMove = (e: PointerEvent) => {
+  if (rafId.current) return; // throttle to one update per frame
+  rafId.current = requestAnimationFrame(() => {
+    const rect = container.getBoundingClientRect();
+    const mouseX = (e.clientX - rect.left) / rect.width;
+    const mouseY = (e.clientY - rect.top) / rect.height;
+    // Update CSS custom properties on the scene container
+    container.style.setProperty('--mouse-x', String(mouseX));
+    container.style.setProperty('--mouse-y', String(mouseY));
+    rafId.current = null;
+  });
+};
+```
+
+Each orb reads `--mouse-x`/`--mouse-y` via CSS `calc()` in its transform, requiring zero React re-renders. This is the preferred approach when multiple interactive orbs exist in the same scene.
 
 ### Scene Container Ref
 
@@ -153,6 +177,6 @@ If both `drift` and `interactive` are true, they both want to control `transform
 
 ## Mobile Considerations
 
-- Touch events: `touchmove` maps to mousemove for mobile parallax
+- Using `pointermove`/`pointerleave` (instead of `mousemove`/`mouseleave`) provides built-in touch and stylus support without separate touch event handling
 - Consider `@media (hover: none)` to disable parallax on touch-only devices
 - Alternative: use device orientation API for tilt-based parallax on mobile

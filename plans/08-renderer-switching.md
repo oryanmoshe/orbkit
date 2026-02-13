@@ -8,7 +8,7 @@ The `renderer` prop exists on both `<OrbScene>` and `<Orb>` but does nothing. Ne
 
 ### Selection Hierarchy
 
-```
+```text
 Per-orb renderer prop > Scene renderer prop > Auto-detection
 ```
 
@@ -19,20 +19,34 @@ Per-orb renderer prop > Scene renderer prop > Auto-detection
 ### Auto-Detection
 
 ```typescript
+let cachedRenderer: RendererType | null = null;
+
 function detectBestRenderer(): RendererType {
-  if (typeof document === 'undefined') return 'css'; // SSR
+  if (cachedRenderer) return cachedRenderer;
+
+  if (typeof document === 'undefined') {
+    // Don't cache SSR result — the module may later run in the browser
+    return 'css';
+  }
 
   // Try WebGL
   const testCanvas = document.createElement('canvas');
   const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl');
-  if (gl) return 'webgl';
+  if (gl) {
+    cachedRenderer = 'webgl';
+    return cachedRenderer;
+  }
 
   // Try Canvas
   const ctx = testCanvas.getContext('2d');
-  if (ctx) return 'canvas';
+  if (ctx) {
+    cachedRenderer = 'canvas';
+    return cachedRenderer;
+  }
 
   // Fallback
-  return 'css';
+  cachedRenderer = 'css';
+  return cachedRenderer;
 }
 ```
 
@@ -108,15 +122,23 @@ For Canvas/WebGL, child `<Orb>` components don't render DOM elements. Instead, t
 
 ```tsx
 // Orb component for imperative renderers
-function Orb(props: OrbProps) {
-  const { registerOrb, unregisterOrb, rendererType } = useOrbSceneContext();
+function Orb({ id, ...props }: OrbProps) {
+  const { registerOrb, unregisterOrb, updateOrb, rendererType } = useOrbSceneContext();
 
+  // Register/unregister once based on stable id
   useEffect(() => {
     if (rendererType !== 'css') {
-      const id = registerOrb(props);
+      registerOrb(id, props);
       return () => unregisterOrb(id);
     }
-  }, [props]);
+  }, [id, rendererType]);
+
+  // Update orb config when props change (without re-registering)
+  useEffect(() => {
+    if (rendererType !== 'css') {
+      updateOrb(id, props);
+    }
+  }, [id, props.color, props.position, props.size, props.blur, props.blendMode]);
 
   // CSS renderer: return <div>
   if (rendererType === 'css') {

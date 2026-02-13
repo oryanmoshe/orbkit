@@ -81,11 +81,13 @@ function WavyFilters({ orbs }: { orbs: WavyOrbConfig[] }) {
   return (
     <svg style={{ position: 'absolute', width: 0, height: 0 }} aria-hidden="true">
       <defs>
-        {orbs.map((orb, i) => (
+        {orbs.map((orb, i) => {
+          const freq = 0.01 + (orb.scale ?? 30) * 0.0005;
+          return (
           <filter id={`orbkit-wavy-${orb.id}`} key={orb.id}>
             <feTurbulence
               type="fractalNoise"
-              baseFrequency={0.01 + (orb.scale ?? 30) * 0.0005}
+              baseFrequency={freq}
               numOctaves={orb.intensity ?? 3}
               seed={i * 17}
               result="noise"
@@ -105,7 +107,8 @@ function WavyFilters({ orbs }: { orbs: WavyOrbConfig[] }) {
               yChannelSelector="G"
             />
           </filter>
-        ))}
+          );
+        })}
       </defs>
     </svg>
   );
@@ -126,13 +129,13 @@ const filterStyle = wavy ? {
 
 ### Registration Flow
 
-1. `<Orb wavy>` registers itself with the scene context (orb ID + wavy config)
-2. `<OrbScene>` collects all wavy registrations and renders a single `<WavyFilters>` SVG
-3. Each wavy `<Orb>` references its filter by ID
+There are two possible approaches for managing SVG filters:
 
-Alternative (simpler): Each `<Orb>` with `wavy` renders its own inline SVG filter as a sibling. Simpler but more DOM nodes.
+1. **Centralized (scene-level):** `<Orb wavy>` registers itself with the scene context (orb ID + wavy config). `<OrbScene>` collects all wavy registrations and renders a single `<WavyFilters>` SVG. Each wavy `<Orb>` references its filter by ID. This reduces DOM nodes but adds registration complexity.
 
-**Recommended: Inline per-orb** for simplicity in v1. Optimize to shared SVG later if needed.
+2. **Inline (per-orb):** Each `<Orb>` with `wavy` renders its own inline SVG filter as a sibling. More DOM nodes but simpler implementation with no context dependency.
+
+**Recommended for v1: Inline per-orb.** Each orb manages its own SVG `<filter>` element. This avoids registration plumbing, keeps the wavy feature independent of scene context, and is simpler to implement/debug. The centralized approach can be adopted later as an optimization if scenes with many wavy orbs cause performance issues (see Performance Notes below).
 
 ## Files to Create
 

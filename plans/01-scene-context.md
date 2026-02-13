@@ -61,16 +61,20 @@ Each `<Orb>` calls a `registerOrb()` function from context on mount, receiving i
 
 ```typescript
 // Inside OrbScene provider
-const orbCountRef = useRef(0);
+// Monotonic counter — never decrements. Ensures unique indices even after unmount/remount cycles.
+const nextOrbIndexRef = useRef(0);
 
 const registerOrb = useCallback(() => {
-  const index = orbCountRef.current;
-  orbCountRef.current += 1;
+  const index = nextOrbIndexRef.current;
+  nextOrbIndexRef.current += 1;
   return index;
 }, []);
 
+// No-op for index tracking. Indices are never reused — this avoids duplicate index bugs
+// when orbs unmount and remount (e.g. conditional rendering, React strict mode double-mount).
 const unregisterOrb = useCallback(() => {
-  orbCountRef.current -= 1;
+  // Intentionally empty — index tracking is monotonic.
+  // If active orb tracking is needed, use a Set<number> of active indices separately.
 }, []);
 ```
 
