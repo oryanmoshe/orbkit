@@ -22,6 +22,9 @@ export function OrbList({ orbs, selectedOrbId, dispatch }: OrbListProps): JSX.El
         size: 0.5 + Math.random() * 0.3,
         blur: 30 + Math.random() * 30,
         blendMode: 'screen',
+        drift: true,
+        wavy: false,
+        interactive: false,
       },
     });
   };

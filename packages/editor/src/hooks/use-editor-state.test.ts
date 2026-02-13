@@ -9,6 +9,9 @@ const makeOrb = (overrides?: Partial<EditorOrb>): EditorOrb => ({
   size: 0.75,
   blur: 40,
   blendMode: 'screen',
+  drift: true,
+  wavy: false,
+  interactive: false,
   ...overrides,
 });
 
@@ -133,5 +136,67 @@ describe('editorReducer', () => {
     const next = editorReducer(DEFAULT_STATE, { type: 'LOAD_CONFIG', config });
     expect(next.background).toBe('#abcdef');
     expect(next.saturation).toBe(99);
+  });
+
+  it('LOAD_CONFIG applies defaults for missing orb fields', () => {
+    // Simulate loading a config saved before drift/wavy/interactive existed
+    const legacyOrb = {
+      id: 'old',
+      color: '#ff0000',
+      position: [0.5, 0.5] as [number, number],
+      size: 0.6,
+      blur: 40,
+      blendMode: 'screen' as const,
+    };
+    const config = {
+      ...DEFAULT_STATE,
+      orbs: [legacyOrb],
+    } as EditorState;
+    const next = editorReducer(DEFAULT_STATE, { type: 'LOAD_CONFIG', config });
+    expect(next.orbs[0]?.drift).toBe(true);
+    expect(next.orbs[0]?.wavy).toBe(false);
+    expect(next.orbs[0]?.interactive).toBe(false);
+    expect(next.locked).toBe(false);
+  });
+
+  it('sets locked', () => {
+    const next = editorReducer(DEFAULT_STATE, { type: 'SET_LOCKED', locked: true });
+    expect(next.locked).toBe(true);
+  });
+
+  it('moves orb in locked mode with symmetry', () => {
+    const state: EditorState = {
+      ...DEFAULT_STATE,
+      locked: true,
+      orbs: [
+        makeOrb({ id: 'a', position: [0.3, 0.5] }),
+        makeOrb({ id: 'b', position: [0.7, 0.5] }),
+      ],
+    };
+    const next = editorReducer(state, {
+      type: 'MOVE_ORB_LOCKED',
+      id: 'a',
+      position: [0.8, 0.5],
+    });
+    // Orb a moved to [0.8, 0.5], orb b should be opposite at [0.2, 0.5]
+    expect(next.orbs[0]?.position[0]).toBeCloseTo(0.8, 4);
+    expect(next.orbs[0]?.position[1]).toBeCloseTo(0.5, 4);
+    expect(next.orbs[1]?.position[0]).toBeCloseTo(0.2, 4);
+    expect(next.orbs[1]?.position[1]).toBeCloseTo(0.5, 4);
+  });
+
+  it('updates orb drift/wavy/interactive toggles', () => {
+    const state = stateWithOrbs();
+    const next = editorReducer(state, {
+      type: 'UPDATE_ORB',
+      id: 'a',
+      changes: { drift: false, wavy: true, interactive: true },
+    });
+    expect(next.orbs[0]?.drift).toBe(false);
+    expect(next.orbs[0]?.wavy).toBe(true);
+    expect(next.orbs[0]?.interactive).toBe(true);
+    // other orb unchanged
+    expect(next.orbs[1]?.drift).toBe(true);
+    expect(next.orbs[1]?.wavy).toBe(false);
   });
 });

@@ -82,7 +82,8 @@ orbkit/
 │       │       ├── export-jsx.ts         # Generate JSX string from config
 │       │       ├── export-json.ts        # Serialize config to JSON
 │       │       ├── export-css.ts         # Generate raw CSS
-│       │       └── random-theme.ts       # Random orb scene generator
+│       │       ├── random-theme.ts       # Random orb scene generator
+│       │       └── symmetry.ts           # Compute symmetrical orb positions for locked mode
 │       └── package.json
 │
 └── examples/
@@ -157,8 +158,9 @@ bun test              # Run tests
 
 ### Editor Package (@orbkit/editor)
 
-- **State Management**: `useEditorState` hook wraps `useReducer` with controlled/uncontrolled support. 13 action types (SET_BACKGROUND, ADD_ORB, UPDATE_ORB, MOVE_ORB, APPLY_PRESET, RANDOMIZE, etc.). In controlled mode, dispatch computes next state and calls `onChange`; in uncontrolled mode, dispatch updates internal state directly.
-- **Canvas Preview**: Renders a live `<OrbScene>` with `<Orb>` children and an overlay of absolutely-positioned drag handles. Click on empty area adds a new orb. Drag handles use pointer capture for smooth repositioning.
+- **State Management**: `useEditorState` hook wraps `useReducer` with controlled/uncontrolled support. 15 action types (SET_BACKGROUND, ADD_ORB, UPDATE_ORB, MOVE_ORB, SET_LOCKED, MOVE_ORB_LOCKED, APPLY_PRESET, RANDOMIZE, etc.). In controlled mode, dispatch computes next state and calls `onChange`; in uncontrolled mode, dispatch updates internal state directly. `LOAD_CONFIG` applies backward-compat defaults for `drift`/`wavy`/`interactive`/`locked` fields.
+- **Canvas Preview**: Renders a live `<OrbScene>` with `<Orb>` children and an overlay of absolutely-positioned drag handles. Click on empty area adds a new orb. Drag handles use pointer capture for smooth repositioning. When `state.locked` is true, dragging dispatches `MOVE_ORB_LOCKED` which uses `symmetry.ts` to place all orbs at equal angular intervals around center.
+- **Symmetrical Lock**: `symmetry.ts` computes rotational symmetry — all N orbs placed at equal angular spacing (360/N degrees) at the same radius from center (0.5, 0.5). Positions clamped to [0, 1].
 - **Preset Gallery**: Uses `presets` Record from core package. Maps `preset.backgroundColor` (not `background`) and `pt.radius` (not `size`). Randomize button dispatches `RANDOMIZE` with `randomizeTheme()`.
 - **Export Panel**: JSX, JSON, and CSS export via copy-to-clipboard. JSON download as file. Exports strip `id` and `selectedOrbId` from state.
 - **Styling**: Zero dependencies. Ships `styles.css` with a polished dark theme. All class names prefixed `orbkit-editor-`. Consumers import `@orbkit/editor/styles.css` or style from scratch.

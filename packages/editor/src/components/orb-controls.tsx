@@ -62,6 +62,33 @@ export function OrbControls({ orb, dispatch }: OrbControlsProps): JSX.Element {
           ))}
         </select>
       </label>
+
+      <div className="orbkit-editor-toggle-group">
+        <label className="orbkit-editor-toggle">
+          <input
+            type="checkbox"
+            checked={orb.drift}
+            onChange={(e) => update({ drift: e.target.checked })}
+          />
+          <span>Drift</span>
+        </label>
+        <label className="orbkit-editor-toggle">
+          <input
+            type="checkbox"
+            checked={orb.wavy}
+            onChange={(e) => update({ wavy: e.target.checked })}
+          />
+          <span>Wavy</span>
+        </label>
+        <label className="orbkit-editor-toggle">
+          <input
+            type="checkbox"
+            checked={orb.interactive}
+            onChange={(e) => update({ interactive: e.target.checked })}
+          />
+          <span>Interactive</span>
+        </label>
+      </div>
     </div>
   );
 }

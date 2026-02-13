@@ -389,6 +389,27 @@
   padding: 4px 10px;
 }
 
+/* ─── Toggle group (drift/wavy/interactive) ─── */
+.orbkit-editor-toggle-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.orbkit-editor-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #999;
+  cursor: pointer;
+}
+
+.orbkit-editor-toggle input[type="checkbox"] {
+  accent-color: #fff;
+  cursor: pointer;
+}
+
 /* ─── Export ─── */
 .orbkit-editor-export-buttons {
   display: flex;

@@ -69,6 +69,7 @@ export function randomizeTheme(): EditorState {
     saturation: 50 + Math.floor(Math.random() * 40),
     grain: 20 + Math.floor(Math.random() * 30),
     breathing: 15 + Math.floor(Math.random() * 35),
+    locked: false,
     orbs: Array.from({ length: count }, (_, i) => ({
       id: `orb-${i}`,
       color: randomHex(),
@@ -76,6 +77,9 @@ export function randomizeTheme(): EditorState {
       size: 0.5 + Math.random() * 0.5,
       blur: 30 + Math.random() * 40,
       blendMode: 'screen' as const,
+      drift: true,
+      wavy: false,
+      interactive: false,
     })),
     selectedOrbId: null,
     renderer: 'css',

@@ -10,6 +10,7 @@ const SAMPLE_STATE: EditorState = {
   saturation: 80,
   grain: 30,
   breathing: 20,
+  locked: false,
   renderer: 'css',
   selectedOrbId: null,
   orbs: [
@@ -20,6 +21,9 @@ const SAMPLE_STATE: EditorState = {
       size: 0.6,
       blur: 40,
       blendMode: 'screen',
+      drift: true,
+      wavy: false,
+      interactive: false,
     },
     {
       id: 'orb-2',
@@ -28,6 +32,9 @@ const SAMPLE_STATE: EditorState = {
       size: 0.8,
       blur: 50,
       blendMode: 'overlay',
+      drift: true,
+      wavy: false,
+      interactive: false,
     },
   ],
 };

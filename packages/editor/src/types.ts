@@ -7,6 +7,9 @@ export interface EditorOrb {
   size: number;
   blur: number;
   blendMode: BlendMode;
+  drift: boolean;
+  wavy: boolean;
+  interactive: boolean;
 }
 
 export interface EditorState {
@@ -14,6 +17,7 @@ export interface EditorState {
   saturation: number;
   grain: number;
   breathing: number;
+  locked: boolean;
   orbs: EditorOrb[];
   selectedOrbId: string | null;
   renderer: RendererType;
@@ -30,6 +34,8 @@ export type EditorAction =
   | { type: 'REMOVE_ORB'; id: string }
   | { type: 'UPDATE_ORB'; id: string; changes: Partial<EditorOrb> }
   | { type: 'MOVE_ORB'; id: string; position: Point }
+  | { type: 'SET_LOCKED'; locked: boolean }
+  | { type: 'MOVE_ORB_LOCKED'; id: string; position: Point }
   | { type: 'APPLY_PRESET'; config: Partial<EditorState> }
   | { type: 'RANDOMIZE'; config: EditorState }
   | { type: 'LOAD_CONFIG'; config: EditorState };
