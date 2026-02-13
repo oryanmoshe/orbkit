@@ -113,7 +113,7 @@ bun test              # Run tests
 - **Wavy Filter**: Per-orb inline SVG with `feTurbulence` + `feDisplacementMap`. Animated via SVG `<animate>` (no JS). Uses React `useId()` for SSR-safe unique filter IDs.
 - **Interactive Parallax**: Scene-level `pointermove` listener (rAF-throttled) sets CSS custom properties `--orbkit-mx`/`--orbkit-my` on container. Each interactive orb computes offset via CSS `calc()` — zero React re-renders. When both drift + interactive are active, a wrapper div separates the two transforms. Default intensity: 35%.
 - **Preset Resolution**: `<OrbScene preset="ocean" />` looks up preset, auto-renders orb components with drift, auto-injects Grain overlay. Explicit props override preset defaults.
-- **Canvas Renderer** (planned): Single `<canvas>`, gaussian-blurred circles.
+- **Canvas Renderer**: `createCanvasRenderer()` factory returns an `OrbRenderer`. Single `<canvas>` element, rAF render loop. Orbs drawn as radial gradients with `globalCompositeOperation` for blend modes. Frame-based drift via `calculateDriftOffset()`. Grain cached as `ImageData`, invalidated on resize/intensity change. Not SSR-compatible.
 - **WebGL Renderer** (planned): GLSL fragment shaders, simplex noise for organic effects.
 
 ## Project Management

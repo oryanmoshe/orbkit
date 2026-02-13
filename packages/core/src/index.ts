@@ -10,11 +10,12 @@ export { useOrbSceneContext } from './context';
 export { presets, registerPreset, ocean, sunset, forest, aurora, minimal } from './presets';
 
 // Utilities
-export { hexToHsl, hslToHex, applySaturation } from './utils/color';
+export { hexToHsl, hslToHex, applySaturation, hexToRgba } from './utils/color';
 export {
   getOrbitParams,
   generateDriftKeyframes,
   generateDriftKeyframeCSS,
+  calculateDriftOffset,
 } from './utils/animation';
 
 // Renderers
@@ -23,6 +24,8 @@ export {
   generateGradientCSS,
   generateGrainIntensity,
 } from './renderers/css-renderer';
+export { createCanvasRenderer } from './renderers/canvas-renderer';
+export type { OrbRenderer, OrbRenderConfig } from './renderers/renderer-interface';
 
 // Types
 export type {

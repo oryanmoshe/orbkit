@@ -31,7 +31,8 @@ import { OrbScene, Orb } from 'orbkit';
 - **Per-orb effects** — Individual blur, blend mode, waviness, drift per orb
 - **Scene context** — Orbs inherit scene settings (breathing, renderer, saturation) automatically
 - **Auto grain overlay** — Noise texture injected when grain > 0
-- **SSR compatible** — Works with `renderToString`, no DOM requirements at render time
+- **Canvas 2D renderer** — `createCanvasRenderer()` for single-canvas rendering with blend modes, drift, and grain
+- **SSR compatible** — CSS renderer works with `renderToString`, no DOM requirements at render time
 - **Zero styling opinion** — Vanilla CSS class names, bring your own styling
 - **TypeScript** — Strict types, full IntelliSense
 
