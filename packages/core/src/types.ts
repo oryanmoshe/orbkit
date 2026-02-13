@@ -106,6 +106,12 @@ export interface PresetPoint {
   color: string;
   position: Point;
   radius: number;
+  blur?: number;
+  opacity?: number;
+  blendMode?: BlendMode;
+  drift?: boolean;
+  wavy?: boolean;
+  interactive?: boolean;
 }
 
 /** A preset theme configuration */
