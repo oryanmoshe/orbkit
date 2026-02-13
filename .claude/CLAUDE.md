@@ -15,11 +15,12 @@
 - `packages/core` → npm: `orbkit`
 - `packages/editor` → npm: `@orbkit/editor`
 
-## Build
-`bun build` for ESM + CJS + `.d.ts` outputs.
-
-## Test
-`bun test`
+## Commands
+- **Build**: `bun build`
+- **Test**: `bun test`
+- **Typecheck**: `bun run typecheck`
+- **Lint**: `bun lint` (check) / `bun lint:fix` (auto-fix)
+- **Always use `bun lint:fix`** before committing to fix formatting + import sorting. Never use `bunx @biomejs/biome` directly — use the project scripts.
 
 ## Styling Rule
 **ZERO styling dependencies.** Vanilla CSS class names only. No styled-components, no Tailwind, no CSS-in-JS. Consumers bring their own.
