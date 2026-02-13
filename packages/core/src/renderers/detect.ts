@@ -5,7 +5,15 @@ let cachedRenderer: RendererType | null = null;
 
 /**
  * Detect the best available renderer for the current environment.
- * Probes WebGL > Canvas > CSS, caching the result after the first browser call.
+ *
+ * Returns CSS by default — it is the most feature-complete renderer,
+ * supporting blur, wavy edges (SVG filters), interactive parallax,
+ * and smooth gradient blending. Canvas and WebGL renderers are available
+ * for high-orb-count scenes where DOM-based rendering becomes a bottleneck,
+ * but must be explicitly opted into via `renderer="canvas"` or `renderer="webgl"`.
+ *
+ * The detection still validates that CSS is viable (i.e., we're in a browser),
+ * falling back gracefully in edge cases.
  */
 export function detectBestRenderer(): RendererType {
   if (cachedRenderer) return cachedRenderer;
@@ -15,23 +23,8 @@ export function detectBestRenderer(): RendererType {
     return 'css';
   }
 
-  const testCanvas = document.createElement('canvas');
-
-  // Try WebGL2/WebGL1
-  const gl = testCanvas.getContext('webgl2') || testCanvas.getContext('webgl');
-  if (gl) {
-    cachedRenderer = 'webgl';
-    return cachedRenderer;
-  }
-
-  // Try Canvas 2D
-  const ctx = testCanvas.getContext('2d');
-  if (ctx) {
-    cachedRenderer = 'canvas';
-    return cachedRenderer;
-  }
-
-  // Fallback
+  // CSS is the most feature-complete renderer (blur, wavy, interactive parallax, grain overlay).
+  // Canvas/WebGL are opt-in for performance-critical scenes with many orbs.
   cachedRenderer = 'css';
   return cachedRenderer;
 }
