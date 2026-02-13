@@ -49,7 +49,7 @@ Container and compositor for Orb components.
 | `background` | `string` | `#000000` | Background color |
 | `grain` | `number` | `0` | Noise overlay intensity (0-1) |
 | `breathing` | `number` | `0` | Global animation intensity (0-100) |
-| `renderer` | `'css' \| 'canvas' \| 'webgl'` | `'css'` | Rendering backend |
+| `renderer` | `'css' \| 'canvas' \| 'webgl' \| 'auto'` | `'css'` | Rendering backend |
 | `as` | `string` | `'div'` | HTML element to render as |
 | `className` | `string` | — | Custom CSS class |
 | `style` | `CSSProperties` | — | Inline styles |
@@ -68,6 +68,31 @@ Individual animated orb primitive.
 | `drift` | `boolean \| DriftConfig` | — | Enable orbital drift animation |
 | `wavy` | `boolean \| WavyConfig` | — | Enable organic edge distortion |
 | `interactive` | `boolean` | — | Enable mouse hover parallax effect |
+
+### Renderers
+
+OrbKit supports three rendering backends. Use `renderer="auto"` to auto-detect the best one, or pick one explicitly.
+
+| | CSS | Canvas 2D | WebGL |
+|---|---|---|---|
+| **How it works** | `<div>` per orb with `radial-gradient` + CSS `@keyframes` | Single `<canvas>`, `requestAnimationFrame` loop | Single `<canvas>`, GLSL fragment shader |
+| **SSR** | Yes | No | No |
+| **Max orbs** | Unlimited | Unlimited | 8 |
+| **Edge distortion** | SVG `feTurbulence` filter | — | Simplex noise 3D + FBM |
+| **Blend modes** | CSS `mix-blend-mode` | Canvas `globalCompositeOperation` | GLSL blend functions |
+| **Anti-banding** | — | — | Jimenez gradient noise dither |
+| **Grain** | Separate `<canvas>` overlay | Same canvas (offscreen composit) | Same shader pass |
+| **Best for** | SSR, simple scenes, broad compat | Medium scenes, no WebGL available | High-quality visuals, many orbs |
+
+```tsx
+// Auto-detect best renderer (WebGL > Canvas > CSS)
+<OrbScene renderer="auto" preset="ocean" />
+
+// Force a specific renderer
+<OrbScene renderer="webgl" preset="ocean" />
+```
+
+**Auto-detection order:** WebGL 2 → WebGL 1 → Canvas 2D → CSS. The result is cached after the first browser probe. SSR always returns CSS.
 
 ### Presets
 

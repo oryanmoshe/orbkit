@@ -26,6 +26,7 @@ export {
 } from './renderers/css-renderer';
 export { createCanvasRenderer } from './renderers/canvas-renderer';
 export { createWebGLRenderer } from './renderers/webgl-renderer';
+export { detectBestRenderer } from './renderers/detect';
 
 // Types
 export type {

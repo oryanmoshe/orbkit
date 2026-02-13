@@ -27,11 +27,13 @@ orbkit/
 │   │   │   ├── types.ts             # All shared TypeScript interfaces
 │   │   │   ├── react.d.ts          # Module augmentation for CSS custom properties
 │   │   │   ├── components/
-│   │   │   │   ├── orb.tsx           # Orb primitive — gradient, blur, drift, wavy, interactive
-│   │   │   │   ├── orb-scene.tsx     # Scene container — context provider, preset resolution
-│   │   │   │   ├── grain.tsx         # Canvas-based noise overlay
+│   │   │   │   ├── orb.tsx           # Orb primitive — gradient/blur/drift (CSS) or register+null (imperative)
+│   │   │   │   ├── orb-scene.tsx     # Scene container — resolves renderer, routes CSS vs imperative
+│   │   │   │   ├── imperative-scene.tsx  # Canvas/WebGL bridge — mounts renderer, syncs props, ResizeObserver
+│   │   │   │   ├── grain.tsx         # Canvas-based noise overlay (CSS renderer only)
 │   │   │   │   ├── wavy-filter.tsx   # SVG feTurbulence + feDisplacementMap filter
 │   │   │   │   ├── orb-scene.test.tsx
+│   │   │   │   ├── renderer-switching.test.tsx
 │   │   │   │   ├── interactive.test.tsx
 │   │   │   │   └── wavy-filter.test.tsx
 │   │   │   ├── context/
@@ -40,6 +42,7 @@ orbkit/
 │   │   │   │   └── index.ts              # Re-exports
 │   │   │   ├── renderers/
 │   │   │   │   ├── renderer-interface.ts  # Re-exports OrbRenderer + OrbRenderConfig from types.ts
+│   │   │   │   ├── detect.ts             # Auto-detection: WebGL > Canvas > CSS (cached, SSR-safe)
 │   │   │   │   ├── css-renderer.ts        # CSS rendering: gradients, keyframes, animation
 │   │   │   │   ├── canvas-renderer.ts     # Canvas 2D rendering: rAF loop, radial gradients, SSR-guarded
 │   │   │   │   ├── webgl-renderer.ts      # WebGL rendering: context, uniforms, animation loop
@@ -113,12 +116,15 @@ bun test              # Run tests
 
 ## Architecture Notes
 
-- **OrbScene Context**: `OrbSceneContext` provides background, grain, breathing, renderer, saturation, and `registerOrb()` to child Orb components. `registerOrb()` returns a monotonic index used for animation staggering.
-- **CSS Renderer** (default): Each orb is a `<div>` with `radial-gradient` + `filter: blur()` + `mix-blend-mode`. Drift via CSS `@keyframes` injected into document head. SSR compatible.
+- **OrbScene Context**: `OrbSceneContext` provides background, grain, breathing, renderer, saturation, `registerOrb()`, `registerOrbConfig()`/`unregisterOrbConfig()`, and `imperativeRendererRef` to child components. `registerOrb()` returns a monotonic index for animation staggering.
+- **Renderer Switching**: `<OrbScene renderer="auto|css|canvas|webgl">` resolves the renderer type. For CSS: orbs render `<div>` elements. For Canvas/WebGL: `<ImperativeScene>` mounts the renderer, and `<Orb>` components register their configs via context then render null. No mixed renderers in v1 — the scene renderer applies to all orbs.
+- **Auto-Detection**: `detectBestRenderer()` probes WebGL2 > WebGL1 > Canvas 2D > CSS. Result is cached after first browser call. SSR always returns CSS (not cached).
+- **ImperativeScene**: Internal component that bridges React props to imperative renderers. Creates renderer, mounts it, syncs background/grain/resize via effects. Orb configs flow through context refs — `registerOrbConfig()` directly calls `renderer.setOrbs()` without triggering React re-renders.
+- **CSS Renderer** (default): Each orb is a `<div>` with `radial-gradient` + `filter: blur()` + `mix-blend-mode`. Drift via CSS `@keyframes` injected into document head. Grain overlay via separate `<canvas>`. SSR compatible.
 - **Drift Animation**: Deterministic seeded orbits — each orb's path is computed from its position + index. Keyframes are injected/removed via `keyframe-registry.ts` with dedup.
 - **Wavy Filter**: Per-orb inline SVG with `feTurbulence` + `feDisplacementMap`. Animated via SVG `<animate>` (no JS). Uses React `useId()` for SSR-safe unique filter IDs.
 - **Interactive Parallax**: Scene-level `pointermove` listener (rAF-throttled) sets CSS custom properties `--orbkit-mx`/`--orbkit-my` on container. Each interactive orb computes offset via CSS `calc()` — zero React re-renders. When both drift + interactive are active, a wrapper div separates the two transforms. Default intensity: 35%.
-- **Preset Resolution**: `<OrbScene preset="ocean" />` looks up preset, auto-renders orb components with drift, auto-injects Grain overlay. Explicit props override preset defaults.
+- **Preset Resolution**: `<OrbScene preset="ocean" />` looks up preset, auto-renders orb components with drift, auto-injects Grain overlay (CSS only — imperative renderers handle grain internally). Explicit props override preset defaults.
 - **Canvas Renderer**: `createCanvasRenderer()` factory returns an `OrbRenderer`. Single `<canvas>` element, rAF render loop. Orbs drawn as radial gradients with `globalCompositeOperation` for blend modes. Frame-based drift via `calculateDriftOffset()`. Grain cached on offscreen canvas, composited via `drawImage`. `unmount()` stops the rAF loop before detaching. Not SSR-compatible.
 - **WebGL Renderer**: `createWebGLRenderer()` factory returns an `OrbRenderer`. Single fullscreen triangle with GLSL fragment shader. Simplex noise 3D (Ashima) + FBM for organic edge distortion. All 8 blend modes in GLSL. Anti-banding dither (Jimenez). Max 8 orbs (uniform arrays, warns on overflow). WebGL2 with WebGL1 fallback. Falls back to Canvas renderer if WebGL unavailable. `unmount()` stops the rAF loop before detaching. Not SSR-compatible.
 

@@ -1,7 +1,7 @@
 import { type JSX, useEffect, useId, useMemo, useState } from 'react';
 import { useOrbSceneContext } from '../context';
 import { generateOrbAnimation } from '../renderers/css-renderer';
-import type { OrbProps, WavyConfig } from '../types';
+import type { OrbProps, OrbRenderConfig, WavyConfig } from '../types';
 import { injectKeyframes, removeKeyframes } from '../utils/keyframe-registry';
 import { WavyFilter } from './wavy-filter';
 
@@ -11,6 +11,10 @@ import { WavyFilter } from './wavy-filter';
  * Can be used inside an OrbScene for composed backgrounds,
  * or standalone for individual orb effects. When inside an
  * OrbScene, inherits breathing/renderer from context.
+ *
+ * For CSS rendering: renders a `<div>` with radial-gradient, blur, and blend mode.
+ * For Canvas/WebGL rendering: registers config with the scene and renders nothing
+ * (the imperative renderer draws all orbs on a shared canvas).
  */
 export function Orb({
   color,
@@ -24,10 +28,18 @@ export function Orb({
   interactive,
   className,
   style,
-}: OrbProps): JSX.Element {
+}: OrbProps): JSX.Element | null {
   const scene = useOrbSceneContext();
   const instanceId = useId();
   const [orbIndex, setOrbIndex] = useState(-1);
+
+  const resolvedRenderer = scene?.renderer ?? 'css';
+  const isImperative = resolvedRenderer !== 'css';
+
+  const [px, py] = position;
+  const driftEnabled = drift === true || (typeof drift === 'object' && drift !== null);
+  const driftSpeed = typeof drift === 'object' ? (drift.speed ?? 1) : 1;
+  const resolvedBreathing = scene?.breathing ?? 0;
 
   // Register with scene on mount to get a monotonic index
   useEffect(() => {
@@ -36,24 +48,36 @@ export function Orb({
     }
   }, [scene]);
 
-  // Scene context provides defaults; explicit props override
-  const resolvedBreathing = scene?.breathing ?? 0;
+  // ─── Imperative renderer: register/update/unregister orb config ──────────
 
-  // Drift animation state
+  useEffect(() => {
+    if (!isImperative || !scene) return;
+
+    const config: OrbRenderConfig = {
+      id: instanceId,
+      color,
+      position: [px, py],
+      size,
+      blur,
+      blendMode,
+      drift: drift ?? false,
+      wavy: wavy ?? false,
+    };
+
+    scene.registerOrbConfig(instanceId, config);
+    return () => scene.unregisterOrbConfig(instanceId);
+  }, [isImperative, scene, instanceId, color, px, py, size, blur, blendMode, drift, wavy]);
+
+  // ─── CSS renderer: drift animation ───────────────────────────────────────
+
   const [animationProps, setAnimationProps] = useState<{
     animationName: string;
     duration: number;
     delay: number;
   } | null>(null);
 
-  // Resolve drift config
-  const driftEnabled = drift === true || (typeof drift === 'object' && drift !== null);
-  const driftSpeed = typeof drift === 'object' ? (drift.speed ?? 1) : 1;
-
-  const [px, py] = position;
-
   useEffect(() => {
-    if (!driftEnabled || orbIndex < 0) {
+    if (isImperative || !driftEnabled || orbIndex < 0) {
       setAnimationProps(null);
       return;
     }
@@ -69,9 +93,8 @@ export function Orb({
     setAnimationProps({ animationName, duration: duration / safeDriftSpeed, delay });
 
     return () => removeKeyframes(animationName);
-  }, [driftEnabled, driftSpeed, orbIndex, resolvedBreathing, px, py, color, size]);
+  }, [isImperative, driftEnabled, driftSpeed, orbIndex, resolvedBreathing, px, py, color, size]);
 
-  // Build animation style
   const animationStyle = useMemo(() => {
     if (!animationProps) return {};
     return {
@@ -80,18 +103,17 @@ export function Orb({
     };
   }, [animationProps]);
 
-  // Resolve wavy config
+  // ─── CSS renderer: wavy filter ───────────────────────────────────────────
+
   const wavyEnabled = wavy === true || (typeof wavy === 'object' && wavy !== null);
   const wavyConfig: WavyConfig = typeof wavy === 'object' && wavy !== null ? wavy : {};
-  // useId() provides stable unique IDs that work in both SSR and client
   const wavyFilterId = wavyEnabled ? `orbkit-wavy-${instanceId.replace(/:/g, '')}` : '';
-
-  // Build filter CSS — combine wavy SVG filter + blur
   const filterCSS = wavyEnabled ? `url(#${wavyFilterId}) blur(${blur}px)` : `blur(${blur}px)`;
 
-  // Interactive parallax — CSS custom properties set by scene, offset computed via calc()
+  // ─── CSS renderer: interactive parallax ──────────────────────────────────
+
   const interactiveEnabled = interactive === true;
-  const intensity = 35; // percentage offset at max displacement
+  const intensity = 35;
 
   const interactiveStyle = interactiveEnabled
     ? {
@@ -101,7 +123,14 @@ export function Orb({
       }
     : {};
 
-  // When both drift + interactive are active, use wrapper div to avoid transform conflicts
+  // ─── Render ──────────────────────────────────────────────────────────────
+
+  // Imperative renderers: render nothing (orb data is in the renderer)
+  if (isImperative) {
+    return null;
+  }
+
+  // CSS renderer: render <div> with gradient, animation, blur
   const orbContent = wavyEnabled ? (
     <WavyFilter
       filterId={wavyFilterId}
