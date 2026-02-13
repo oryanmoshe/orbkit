@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useRef } from 'react';
+import { type RefObject, createContext, useCallback, useContext, useRef } from 'react';
 import type { OrbSceneContextValue, RendererType } from '../types';
 
 const OrbSceneContext = createContext<OrbSceneContextValue | null>(null);
@@ -24,6 +24,7 @@ export function useOrbSceneProvider(values: {
   breathing: number;
   renderer: RendererType;
   saturation: number;
+  containerRef: RefObject<HTMLElement | null>;
 }): OrbSceneContextValue {
   const nextOrbIndexRef = useRef(0);
 

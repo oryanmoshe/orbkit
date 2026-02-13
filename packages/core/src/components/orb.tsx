@@ -21,7 +21,7 @@ export function Orb({
   wavy,
   drift,
   renderer: _renderer,
-  interactive: _interactive,
+  interactive,
   className,
   style,
 }: OrbProps): JSX.Element {
@@ -89,24 +89,21 @@ export function Orb({
   // Build filter CSS — combine wavy SVG filter + blur
   const filterCSS = wavyEnabled ? `url(#${wavyFilterId}) blur(${blur}px)` : `blur(${blur}px)`;
 
-  // TODO: Handle interactive hover effects (plan 04)
+  // Interactive parallax — CSS custom properties set by scene, offset computed via calc()
+  const interactiveEnabled = interactive === true;
+  const intensity = 15; // percentage offset at max displacement
 
-  return (
-    <div
-      className={className ? `orbkit-orb ${className}` : 'orbkit-orb'}
-      style={{
-        position: 'absolute',
-        width: '130%',
-        height: '130%',
-        top: '-15%',
-        left: '-15%',
-        background: `radial-gradient(at ${px * 100}% ${py * 100}%, ${color} 0%, transparent ${size * 100}%)`,
-        filter: filterCSS,
-        mixBlendMode: blendMode,
-        ...animationStyle,
-        ...style,
-      }}
-    >
+  const interactiveStyle = interactiveEnabled
+    ? {
+        transform: `translate(calc((var(--orbkit-mx, 0.5) - ${px}) * ${intensity}%), calc((var(--orbkit-my, 0.5) - ${py}) * ${intensity}%))`,
+        transition: 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        willChange: 'transform' as const,
+      }
+    : {};
+
+  // When both drift + interactive are active, use wrapper div to avoid transform conflicts
+  const orbContent = (
+    <>
       {wavyEnabled && (
         <WavyFilter
           filterId={wavyFilterId}
@@ -114,6 +111,50 @@ export function Orb({
           seed={orbIndex >= 0 ? orbIndex * 17 : 0}
         />
       )}
+    </>
+  );
+
+  const orbStyle = {
+    position: 'absolute' as const,
+    width: '130%',
+    height: '130%',
+    top: '-15%',
+    left: '-15%',
+    background: `radial-gradient(at ${px * 100}% ${py * 100}%, ${color} 0%, transparent ${size * 100}%)`,
+    filter: filterCSS,
+    mixBlendMode: blendMode,
+  };
+
+  // Drift + interactive: wrapper div for drift, inner div for parallax
+  if (driftEnabled && interactiveEnabled) {
+    return (
+      <div className="orbkit-orb-drift" style={{ ...orbStyle, ...animationStyle }}>
+        <div
+          className={className ? `orbkit-orb ${className}` : 'orbkit-orb'}
+          style={{
+            width: '100%',
+            height: '100%',
+            ...interactiveStyle,
+            ...style,
+          }}
+        >
+          {orbContent}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={className ? `orbkit-orb ${className}` : 'orbkit-orb'}
+      style={{
+        ...orbStyle,
+        ...animationStyle,
+        ...interactiveStyle,
+        ...style,
+      }}
+    >
+      {orbContent}
     </div>
   );
 }

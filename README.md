@@ -65,7 +65,7 @@ Individual animated orb primitive.
 | `blendMode` | `BlendMode` | `'screen'` | CSS mix-blend-mode |
 | `drift` | `boolean \| DriftConfig` | — | Enable orbital drift animation |
 | `wavy` | `boolean \| WavyConfig` | — | Enable organic edge distortion |
-| `interactive` | `boolean` | — | Enable mouse hover effects (coming soon) |
+| `interactive` | `boolean` | — | Enable mouse hover parallax effect |
 
 ### Presets
 
