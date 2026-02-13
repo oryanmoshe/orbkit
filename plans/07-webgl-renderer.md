@@ -132,8 +132,24 @@ void main() {
   // Anti-banding dither
   color += (1.0 / 255.0) * gradientNoise(gl_FragCoord.xy + 0.5) - (0.5 / 255.0);
 
+  // WebGL2 (GLSL ES 3.00): use declared output; WebGL1: use gl_FragColor
+  #if __VERSION__ >= 300
+  fragColor = vec4(color, 1.0);
+  #else
   gl_FragColor = vec4(color, 1.0);
+  #endif
 }
+```
+
+**WebGL2 note**: When using `#version 300 es`, `gl_FragColor` is not defined in GLSL ES 3.00. The shader must declare `out vec4 fragColor;` and write to it. The implementation should prepend either `#version 300 es` with `out vec4 fragColor;` (WebGL2) or omit the version directive (WebGL1 fallback). See the preamble injection below:
+
+```glsl
+// WebGL2 preamble (prepended by host code):
+#version 300 es
+out vec4 fragColor;
+
+// WebGL1 preamble (prepended by host code):
+// (no version directive — defaults to ESSL 1.00, gl_FragColor is available)
 ```
 
 ### Orb Count Clamping
@@ -159,13 +175,15 @@ function setOrbs(orbs: OrbRenderConfig[]) {
 function animate(time: number) {
   gl.uniform1f(timeLocation, time / 1000);
 
-  // Update orb positions with drift
+  // Update orb positions with drift.
+  // Drift offsets are deterministic: seeded from orb index + base position,
+  // producing identical animation paths across renders for the same config.
   for (let i = 0; i < orbs.length; i++) {
-    const offset = calculateDriftOffset(orbs[i], time);
+    const offset = calculateDriftOffset(orbs[i], time); // seeded from orb position
     gl.uniform2f(
       positionLocations[i],
-      orbs[i].position[0] + offset[0],
-      orbs[i].position[1] + offset[1]
+      orbs[i].position[0] + offset.x,
+      orbs[i].position[1] + offset.y
     );
   }
 

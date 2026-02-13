@@ -46,6 +46,28 @@ interface OrbRenderConfig {
 }
 ```
 
+### Internal Orb Representation
+
+The renderer pre-computes derived values when orbs are set, avoiding per-frame recalculation:
+
+```typescript
+// Internal representation with pre-computed values
+interface InternalOrb extends OrbRenderConfig {
+  adjustedColor: string;            // Parsed color with full opacity
+  adjustedColorTransparent: string; // Same color with 0 opacity (for gradient stops)
+  orbitParams: DriftOrbitParams;    // Pre-computed orbit amplitude/duration/delay
+}
+
+function toInternalOrbs(configs: OrbRenderConfig[]): InternalOrb[] {
+  return configs.map(config => ({
+    ...config,
+    adjustedColor: parseColor(config.color),
+    adjustedColorTransparent: parseColor(config.color, 0),
+    orbitParams: computeOrbitParams(config),
+  }));
+}
+```
+
 ### Canvas Implementation
 
 ```typescript
@@ -95,6 +117,10 @@ export function createCanvasRenderer(options: CanvasRendererOptions): OrbRendere
     animationId = requestAnimationFrame(render);
   }
 
+  function setOrbs(configs: OrbRenderConfig[]): void {
+    orbs = toInternalOrbs(configs);
+  }
+
   return { mount, unmount, setOrbs, setBackground, setGrain, resize, start, stop, destroy };
 }
 ```
@@ -129,7 +155,7 @@ Canvas `filter: blur()` is expensive. Better approaches:
 
 ### Drift Animation in Canvas
 
-Instead of CSS keyframes, calculate drift position per frame:
+Instead of CSS keyframes, calculate drift position per frame. Offsets are **deterministic** — seeded from the orb's pre-computed `orbitParams` (derived from position/index), ensuring identical animation paths across renders for the same configuration:
 
 ```typescript
 function calculateDriftOffset(orb: InternalOrb, time: number): { x: number; y: number } {
