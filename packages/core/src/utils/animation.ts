@@ -98,6 +98,7 @@ export function calculateDriftOffset(
   timeMs: number,
 ): { x: number; y: number } {
   const { amplitudeX, amplitudeY, duration, delay } = params;
+  if (duration <= 0) return { x: 0, y: 0 };
   const timeSec = timeMs / 1000;
   const t = (((timeSec + delay) % duration) + duration) % duration;
   const angle = (t / duration) * Math.PI * 2;

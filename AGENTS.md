@@ -45,8 +45,8 @@ orbkit/
 │   │   │   ├── presets/
 │   │   │   │   └── index.ts          # 5 built-in presets + registerPreset()
 │   │   │   └── utils/
-│   │   │       ├── color.ts          # hexToHsl, hslToHex, applySaturation
-│   │   │       ├── animation.ts      # Orbit params, drift keyframe generation
+│   │   │       ├── color.ts          # hexToHsl, hslToHex, applySaturation, hexToRgba
+│   │   │       ├── animation.ts      # Orbit params, drift keyframes, calculateDriftOffset
 │   │   │       └── keyframe-registry.ts  # CSS @keyframes injection + dedup + SSR guard
 │   │   └── package.json
 │   │
