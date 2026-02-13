@@ -48,6 +48,7 @@ Container and compositor for Orb components.
 | `preset` | `string` | — | Named preset (`ocean`, `sunset`, `forest`, `aurora`, `minimal`) |
 | `background` | `string` | `#000000` | Background color |
 | `grain` | `number` | `0` | Noise overlay intensity (0-1) |
+| `saturation` | `number` | `70` | Color saturation (0-100) |
 | `breathing` | `number` | `0` | Global animation intensity (0-100) |
 | `renderer` | `'css' \| 'canvas' \| 'webgl' \| 'auto'` | `'css'` | Rendering backend |
 | `as` | `string` | `'div'` | HTML element to render as |
@@ -167,8 +168,8 @@ const [config, setConfig] = useState(DEFAULT_STATE);
 **Features:**
 - Live preview with draggable orb handles
 - Preset gallery with randomize button
-- Per-orb controls: color, size, blur, blend mode
-- Scene controls: background, saturation, grain, breathing, renderer
+- Per-orb controls: color, size, blur, blend mode, drift/wavy/interactive toggles
+- Scene controls: background, saturation, grain, breathing, renderer, symmetrical lock
 - Export to JSX, JSON, or CSS with copy-to-clipboard
 - Controlled and uncontrolled modes (like React form inputs)
 

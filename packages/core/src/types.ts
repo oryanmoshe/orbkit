@@ -72,6 +72,8 @@ export interface OrbSceneProps {
   background?: string;
   /** Noise overlay intensity 0-1 */
   grain?: number;
+  /** Color saturation 0-100 */
+  saturation?: number;
   /** Global animation intensity 0-100 */
   breathing?: number;
   /** Named preset to use */

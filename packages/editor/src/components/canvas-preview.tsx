@@ -71,6 +71,9 @@ export function CanvasPreview({ state, dispatch }: CanvasPreviewProps): JSX.Elem
             size: 0.6,
             blur: 40,
             blendMode: 'screen',
+            drift: true,
+            wavy: false,
+            interactive: false,
           },
         });
       }
@@ -89,6 +92,7 @@ export function CanvasPreview({ state, dispatch }: CanvasPreviewProps): JSX.Elem
       <OrbScene
         background={state.background}
         grain={state.grain / 100}
+        saturation={state.saturation}
         breathing={state.breathing}
         renderer={state.renderer}
       >
@@ -100,7 +104,9 @@ export function CanvasPreview({ state, dispatch }: CanvasPreviewProps): JSX.Elem
             size={orb.size}
             blur={orb.blur}
             blendMode={orb.blendMode}
-            drift
+            drift={orb.drift}
+            wavy={orb.wavy}
+            interactive={orb.interactive}
           />
         ))}
       </OrbScene>
@@ -113,7 +119,13 @@ export function CanvasPreview({ state, dispatch }: CanvasPreviewProps): JSX.Elem
           color={orb.color}
           selected={orb.id === state.selectedOrbId}
           onSelect={() => dispatch({ type: 'SELECT_ORB', id: orb.id })}
-          onDrag={(pos) => dispatch({ type: 'MOVE_ORB', id: orb.id, position: pos })}
+          onDrag={(pos) =>
+            dispatch({
+              type: state.locked ? 'MOVE_ORB_LOCKED' : 'MOVE_ORB',
+              id: orb.id,
+              position: pos,
+            })
+          }
           containerRef={containerRef}
         />
       ))}
