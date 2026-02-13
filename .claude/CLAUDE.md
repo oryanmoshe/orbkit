@@ -15,11 +15,13 @@
 - `packages/core` → npm: `orbkit`
 - `packages/editor` → npm: `@orbkit/editor`
 
-## Build
-`bun build` for ESM + CJS + `.d.ts` outputs.
+## Commands
 
-## Test
-`bun test`
+- **Build**: `bun build`
+- **Test**: `bun test`
+- **Typecheck**: `bun run typecheck`
+- **Lint**: `bun lint` (check) / `bun lint:fix` (auto-fix)
+- **Always use `bun lint:fix`** before committing to fix formatting + import sorting. Never use `bunx @biomejs/biome` directly — use the project scripts.
 
 ## Styling Rule
 **ZERO styling dependencies.** Vanilla CSS class names only. No styled-components, no Tailwind, no CSS-in-JS. Consumers bring their own.
@@ -64,8 +66,9 @@ Exception: commits on `main` directly (e.g., config changes) can use `(#0)` for 
 1. Push branch, create PR with `gh pr create`
 2. PR title: `<emoji> <type>: <description>`
 3. PR body must include `closes #N` to auto-close the issue on merge
-4. Wait for CodeRabbit review
-5. Squash-merge to keep history clean
+4. **Always assign PRs and issues to `oryanmoshe`** (`gh pr edit --add-assignee oryanmoshe`)
+5. Wait for CodeRabbit review
+6. Squash-merge to keep history clean
 
 ### Creating Issues
 When work needs doing but no issue exists:

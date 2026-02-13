@@ -3,8 +3,11 @@ export { OrbScene } from './components/orb-scene';
 export { Orb } from './components/orb';
 export { Grain } from './components/grain';
 
+// Context
+export { useOrbSceneContext } from './context';
+
 // Presets
-export { presets, ocean, sunset, forest, aurora, minimal } from './presets';
+export { presets, registerPreset, ocean, sunset, forest, aurora, minimal } from './presets';
 
 // Utilities
 export { hexToHsl, hslToHex, applySaturation } from './utils/color';
@@ -37,3 +40,4 @@ export type {
   HslColor,
   OrbitParams,
 } from './types';
+export type { OrbSceneContextValue } from './context';

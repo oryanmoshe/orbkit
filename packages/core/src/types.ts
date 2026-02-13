@@ -124,6 +124,17 @@ export interface HslColor {
   l: number;
 }
 
+/** Scene-level values provided to child Orb components via context */
+export interface OrbSceneContextValue {
+  background: string;
+  grain: number;
+  breathing: number;
+  renderer: RendererType;
+  saturation: number;
+  /** Register an orb and receive a unique monotonic index for animation staggering */
+  registerOrb: () => number;
+}
+
 /** Orbit parameters for drift animation */
 export interface OrbitParams {
   amplitudeX: number;
