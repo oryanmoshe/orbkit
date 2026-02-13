@@ -1,0 +1,116 @@
+import { Orb, OrbScene } from 'orbkit';
+import { useState } from 'react';
+
+const presetNames = ['ocean', 'sunset', 'forest', 'aurora', 'minimal'] as const;
+
+export function App() {
+  const [preset, setPreset] = useState<string>('ocean');
+  const [showCustom, setShowCustom] = useState(false);
+
+  return (
+    <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
+      {/* Full-screen orb scene */}
+      {showCustom ? (
+        <OrbScene
+          background="#0a0a1a"
+          grain={0.3}
+          breathing={30}
+          style={{ position: 'absolute', inset: 0 }}
+        >
+          <Orb
+            color="#7C3AED"
+            position={[0.15, 0.2]}
+            size={0.85}
+            blur={50}
+            drift
+            interactive
+            wavy
+          />
+          <Orb
+            color="#06B6D4"
+            position={[0.8, 0.35]}
+            size={0.75}
+            blur={60}
+            drift
+            interactive
+            wavy={{ scale: 40, speed: 0.8 }}
+          />
+          <Orb color="#E07B3C" position={[0.4, 0.8]} size={0.7} blur={40} drift interactive />
+          <Orb
+            color="#D94F8C"
+            position={[0.65, 0.65]}
+            size={0.6}
+            blur={45}
+            drift
+            interactive
+            wavy={{ scale: 25 }}
+          />
+        </OrbScene>
+      ) : (
+        <OrbScene preset={preset} style={{ position: 'absolute', inset: 0 }} />
+      )}
+
+      {/* UI overlay */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 10,
+          padding: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+        }}
+      >
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {presetNames.map((name) => (
+            <button
+              type="button"
+              key={name}
+              onClick={() => {
+                setPreset(name);
+                setShowCustom(false);
+              }}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '0.5rem',
+                border:
+                  !showCustom && preset === name
+                    ? '2px solid #fff'
+                    : '1px solid rgba(255,255,255,0.2)',
+                background:
+                  !showCustom && preset === name ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.3)',
+                color: '#fff',
+                cursor: 'pointer',
+                textTransform: 'capitalize',
+                fontSize: '0.875rem',
+                backdropFilter: 'blur(10px)',
+              }}
+            >
+              {name}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={() => setShowCustom(true)}
+            style={{
+              padding: '0.5rem 1rem',
+              borderRadius: '0.5rem',
+              border: showCustom ? '2px solid #fff' : '1px solid rgba(255,255,255,0.2)',
+              background: showCustom ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.3)',
+              color: '#fff',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            custom (interactive)
+          </button>
+        </div>
+
+        <div style={{ marginTop: 'auto', opacity: 0.5, fontSize: '0.75rem' }}>
+          {showCustom ? 'Move your mouse — orbs follow with parallax' : `Preset: ${preset}`}
+        </div>
+      </div>
+    </div>
+  );
+}
