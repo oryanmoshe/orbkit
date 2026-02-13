@@ -106,11 +106,17 @@ export interface PresetPoint {
   color: string;
   position: Point;
   radius: number;
+  /** Blur radius in pixels (default: 40) */
   blur?: number;
+  /** Opacity from 0 to 1 (default: 0.8) */
   opacity?: number;
+  /** CSS mix-blend-mode (default: 'screen') */
   blendMode?: BlendMode;
+  /** Enable orbital drift animation (default: true) */
   drift?: boolean;
+  /** Enable organic blob-morph edges (default: false) */
   wavy?: boolean;
+  /** Enable mouse-hover parallax effect (default: false) */
   interactive?: boolean;
 }
 

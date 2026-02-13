@@ -138,8 +138,8 @@ registerPreset({
   label: 'My Custom Theme',
   backgroundColor: '#1a1a2e',
   points: [
-    { id: 'p1', color: '#E94560', position: [0.3, 0.3], radius: 0.8 },
-    { id: 'p2', color: '#0F3460', position: [0.7, 0.6], radius: 0.7 },
+    { id: 'p1', color: '#E94560', position: [0.3, 0.3], radius: 0.8, drift: true },
+    { id: 'p2', color: '#0F3460', position: [0.7, 0.6], radius: 0.7, blur: 60, wavy: true },
   ],
   saturation: 70,
   grain: 35,
