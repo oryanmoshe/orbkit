@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useReducer, useRef } from 'react';
 import type { EditorAction, EditorState } from '../types';
+import { computeSymmetricalPositions } from '../utils/symmetry';
 
 const DEFAULT_STATE: EditorState = {
   background: '#0a0a0a',
   saturation: 80,
   grain: 25,
   breathing: 20,
+  locked: false,
   orbs: [],
   selectedOrbId: null,
   renderer: 'css',
@@ -45,6 +47,17 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         ...state,
         orbs: state.orbs.map((o) => (o.id === action.id ? { ...o, position: action.position } : o)),
       };
+    case 'SET_LOCKED':
+      return { ...state, locked: action.locked };
+    case 'MOVE_ORB_LOCKED': {
+      const movedIndex = state.orbs.findIndex((o) => o.id === action.id);
+      if (movedIndex === -1) return state;
+      const positions = computeSymmetricalPositions(action.position, state.orbs.length, movedIndex);
+      return {
+        ...state,
+        orbs: state.orbs.map((o, i) => ({ ...o, position: positions[i] ?? o.position })),
+      };
+    }
     case 'APPLY_PRESET': {
       const preset = action.config;
       return {
@@ -55,8 +68,23 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
     }
     case 'RANDOMIZE':
       return { ...action.config, selectedOrbId: null };
-    case 'LOAD_CONFIG':
-      return action.config;
+    case 'LOAD_CONFIG': {
+      const config = action.config;
+      return {
+        ...config,
+        locked: config.locked ?? false,
+        orbs: config.orbs.map((o) => {
+          // Backward compat: older configs from JSON may lack new fields
+          const raw = o as unknown as Record<string, unknown>;
+          return {
+            ...o,
+            drift: (raw.drift as boolean) ?? true,
+            wavy: (raw.wavy as boolean) ?? false,
+            interactive: (raw.interactive as boolean) ?? false,
+          };
+        }),
+      };
+    }
   }
 }
 

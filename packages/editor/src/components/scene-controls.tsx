@@ -62,6 +62,15 @@ export function SceneControls({ state, dispatch }: SceneControlsProps): JSX.Elem
           ))}
         </div>
       </div>
+
+      <label className="orbkit-editor-toggle">
+        <input
+          type="checkbox"
+          checked={state.locked}
+          onChange={(e) => dispatch({ type: 'SET_LOCKED', locked: e.target.checked })}
+        />
+        <span>Symmetrical Lock</span>
+      </label>
     </div>
   );
 }

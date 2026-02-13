@@ -83,7 +83,7 @@ orbkit/
 │       │       ├── export-json.ts        # Serialize config to JSON
 │       │       ├── export-css.ts         # Generate raw CSS
 │       │       ├── random-theme.ts       # Random orb scene generator
-│       │       └── symmetry.ts           # Compute symmetrical orb positions for locked mode
+│       │       └── symmetry.ts           # Compute symmetrical orb positions for locked/symmetrical mode
 │       └── package.json
 │
 └── examples/
