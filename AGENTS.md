@@ -41,7 +41,8 @@ orbkit/
 │   │   │   ├── renderers/
 │   │   │   │   ├── renderer-interface.ts  # Re-exports OrbRenderer + OrbRenderConfig from types.ts
 │   │   │   │   ├── css-renderer.ts        # CSS rendering: gradients, keyframes, animation
-│   │   │   │   └── canvas-renderer.ts     # Canvas 2D rendering: rAF loop, radial gradients, SSR-guarded
+│   │   │   │   ├── canvas-renderer.ts     # Canvas 2D rendering: rAF loop, radial gradients, SSR-guarded
+│   │   │   │   └── webgl-renderer.ts      # WebGL rendering: GLSL shaders, simplex noise, GPU blend modes
 │   │   │   ├── presets/
 │   │   │   │   └── index.ts          # 5 built-in presets + registerPreset()
 │   │   │   └── utils/
@@ -113,8 +114,8 @@ bun test              # Run tests
 - **Wavy Filter**: Per-orb inline SVG with `feTurbulence` + `feDisplacementMap`. Animated via SVG `<animate>` (no JS). Uses React `useId()` for SSR-safe unique filter IDs.
 - **Interactive Parallax**: Scene-level `pointermove` listener (rAF-throttled) sets CSS custom properties `--orbkit-mx`/`--orbkit-my` on container. Each interactive orb computes offset via CSS `calc()` — zero React re-renders. When both drift + interactive are active, a wrapper div separates the two transforms. Default intensity: 35%.
 - **Preset Resolution**: `<OrbScene preset="ocean" />` looks up preset, auto-renders orb components with drift, auto-injects Grain overlay. Explicit props override preset defaults.
-- **Canvas Renderer**: `createCanvasRenderer()` factory returns an `OrbRenderer`. Single `<canvas>` element, rAF render loop. Orbs drawn as radial gradients with `globalCompositeOperation` for blend modes. Frame-based drift via `calculateDriftOffset()`. Grain cached as `ImageData`, invalidated on resize/intensity change. Not SSR-compatible.
-- **WebGL Renderer** (planned): GLSL fragment shaders, simplex noise for organic effects.
+- **Canvas Renderer**: `createCanvasRenderer()` factory returns an `OrbRenderer`. Single `<canvas>` element, rAF render loop. Orbs drawn as radial gradients with `globalCompositeOperation` for blend modes. Frame-based drift via `calculateDriftOffset()`. Grain cached on offscreen canvas, composited via `drawImage`. Not SSR-compatible.
+- **WebGL Renderer**: `createWebGLRenderer()` factory returns an `OrbRenderer`. Single fullscreen triangle with GLSL fragment shader. Simplex noise 3D (Ashima) + FBM for organic edge distortion. All 8 blend modes in GLSL. Anti-banding dither (Jimenez). Max 8 orbs (uniform arrays). WebGL2 with WebGL1 fallback. Falls back to Canvas renderer if WebGL unavailable. Not SSR-compatible.
 
 ## Project Management
 
