@@ -126,6 +126,7 @@ export function createCanvasRenderer(): OrbRenderer {
     },
 
     unmount() {
+      this.stop();
       if (canvas?.parentElement) {
         canvas.parentElement.removeChild(canvas);
       }

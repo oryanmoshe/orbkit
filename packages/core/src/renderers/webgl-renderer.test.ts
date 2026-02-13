@@ -1,6 +1,6 @@
 import { describe, expect, it, mock } from 'bun:test';
 import type { BlendMode } from '../types';
-import { BLEND_MODE_INDEX, hexToVec3 } from './webgl-renderer';
+import { BLEND_MODE_INDEX, createWebGLRenderer, hexToVec3 } from './webgl-renderer';
 
 describe('WebGL renderer utilities', () => {
   describe('hexToVec3', () => {
@@ -81,12 +81,28 @@ describe('WebGL renderer utilities', () => {
       const originalWarn = console.warn;
       console.warn = warnSpy;
 
-      // Import dynamically to test the warning behavior
-      // The warning is emitted in setOrbs which needs a WebGL context,
-      // so we test the MAX_ORBS constant indirectly via BLEND_MODE_INDEX coverage
-      expect(Object.keys(BLEND_MODE_INDEX)).toHaveLength(8);
+      // Stub document so createWebGLRenderer doesn't fall back to canvas
+      const originalDoc = globalThis.document;
+      globalThis.document = {} as Document;
+
+      const renderer = createWebGLRenderer();
+      renderer.setOrbs(
+        Array.from({ length: 9 }, (_, i) => ({
+          id: `orb-${i}`,
+          color: '#FF0000',
+          position: [0.5, 0.5] as [number, number],
+          size: 0.3,
+          blur: 20,
+          blendMode: 'screen' as const,
+          drift: false,
+          wavy: false,
+        })),
+      );
+
+      expect(warnSpy).toHaveBeenCalled();
 
       console.warn = originalWarn;
+      globalThis.document = originalDoc;
     });
   });
 });
