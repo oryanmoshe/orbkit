@@ -65,8 +65,9 @@ Exception: commits on `main` directly (e.g., config changes) can use `(#0)` for 
 1. Push branch, create PR with `gh pr create`
 2. PR title: `<emoji> <type>: <description>`
 3. PR body must include `closes #N` to auto-close the issue on merge
-4. Wait for CodeRabbit review
-5. Squash-merge to keep history clean
+4. **Always assign PRs and issues to `oryanmoshe`** (`gh pr edit --add-assignee oryanmoshe`)
+5. Wait for CodeRabbit review
+6. Squash-merge to keep history clean
 
 ### Creating Issues
 When work needs doing but no issue exists:
