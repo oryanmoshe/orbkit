@@ -33,6 +33,15 @@ export function Orb({
   const instanceId = useId();
   const [orbIndex, setOrbIndex] = useState(-1);
 
+  // Stable fallback index for standalone orbs (no scene) — derived from useId()
+  const fallbackOrbIndex = useMemo(() => {
+    let hash = 0;
+    for (let i = 0; i < instanceId.length; i++) {
+      hash = (hash * 31 + instanceId.charCodeAt(i)) | 0;
+    }
+    return Math.abs(hash);
+  }, [instanceId]);
+
   const resolvedRenderer = scene?.renderer ?? 'css';
   const isImperative = resolvedRenderer !== 'css';
 
@@ -45,8 +54,10 @@ export function Orb({
   useEffect(() => {
     if (scene) {
       setOrbIndex(scene.registerOrb());
+    } else {
+      setOrbIndex(fallbackOrbIndex);
     }
-  }, [scene]);
+  }, [scene, fallbackOrbIndex]);
 
   // ─── Imperative renderer: register/update/unregister orb config ──────────
 

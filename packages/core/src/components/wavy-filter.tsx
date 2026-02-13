@@ -27,7 +27,7 @@ export function WavyFilter({ filterId, config, seed, blur = 0 }: WavyFilterProps
   // Frequency based on user scale — lower = smoother, more bubble-like undulations
   const baseFrequency = 0.008 + userScale * 0.0003;
   // Displacement increases with blur so wavy edges survive the smoothing
-  const displacementScale = Math.max(userScale, userScale + blur * 2);
+  const displacementScale = userScale + Math.max(0, blur) * 2;
   const safeSpeed = speed > 0 ? speed : 1;
   const duration = 8 / safeSpeed;
 

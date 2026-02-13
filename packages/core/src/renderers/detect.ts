@@ -3,6 +3,11 @@ import type { RendererType } from '../types';
 /** Cached auto-detection result (not cached during SSR — module may later run in browser) */
 let cachedRenderer: RendererType | null = null;
 
+/** @internal Reset cached detection — for testing only */
+export function _resetDetectionCache(): void {
+  cachedRenderer = null;
+}
+
 /**
  * Detect the best available renderer for the current environment.
  *
