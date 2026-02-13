@@ -1,0 +1,543 @@
+/* @orbkit/editor — default styles */
+
+/* ─── Layout ─── */
+.orbkit-editor {
+  display: flex;
+  gap: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  color: #e0e0e0;
+  background: #141414;
+  border-radius: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.orbkit-editor *,
+.orbkit-editor *::before,
+.orbkit-editor *::after {
+  box-sizing: border-box;
+}
+
+.orbkit-editor-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.orbkit-editor-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  max-height: 100%;
+}
+
+/* ─── Section titles ─── */
+.orbkit-editor-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  margin: 0 0 8px;
+}
+
+/* ─── Canvas preview ─── */
+.orbkit-editor-canvas {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.orbkit-editor-canvas .orbkit-scene {
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── Drag handles ─── */
+.orbkit-editor-drag-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid;
+  background: rgba(255, 255, 255, 0.15);
+  transform: translate(-50%, -50%);
+  cursor: grab;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+  padding: 0;
+  outline: none;
+}
+
+.orbkit-editor-drag-handle:hover {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.orbkit-editor-drag-handle--selected {
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.orbkit-editor-drag-handle:active {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* ─── Presets ─── */
+.orbkit-editor-presets-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.orbkit-editor-presets-header .orbkit-editor-section-title {
+  margin: 0;
+}
+
+.orbkit-editor-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 6px;
+}
+
+.orbkit-editor-preset-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+  transition: border-color 0.15s ease, transform 0.12s ease;
+}
+
+.orbkit-editor-preset-thumb:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+.orbkit-editor-preset-dot {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(6px);
+  opacity: 0.8;
+  transform: translate(-50%, -50%);
+}
+
+.orbkit-editor-preset-name {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0 2px;
+}
+
+/* ─── Orb list ─── */
+.orbkit-editor-orb-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.orbkit-editor-orb-list-header .orbkit-editor-section-title {
+  margin: 0;
+}
+
+.orbkit-editor-orb-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #e0e0e0;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-size: 13px;
+  transition: background 0.12s ease;
+}
+
+.orbkit-editor-orb-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.orbkit-editor-orb-item--selected {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.orbkit-editor-orb-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.orbkit-editor-orb-delete {
+  margin-left: auto;
+  padding: 2px 6px;
+  background: transparent;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.orbkit-editor-orb-delete:hover {
+  color: #f44;
+  background: rgba(255, 68, 68, 0.1);
+}
+
+/* ─── Controls (orb + scene) ─── */
+.orbkit-editor-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.orbkit-editor-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.orbkit-editor-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #999;
+}
+
+.orbkit-editor-label span {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ─── Slider ─── */
+.orbkit-editor-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.orbkit-editor-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #888;
+}
+
+.orbkit-editor-slider-value {
+  font-variant-numeric: tabular-nums;
+  color: #bbb;
+  font-size: 11px;
+  min-width: 24px;
+  text-align: right;
+}
+
+.orbkit-editor-slider input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.35) 0%,
+    rgba(255, 255, 255, 0.35) var(--slider-percent, 0%),
+    #2a2a2a var(--slider-percent, 0%),
+    #2a2a2a 100%
+  );
+  outline: none;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.orbkit-editor-slider input[type="range"]:hover {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.45) var(--slider-percent, 0%),
+    #333 var(--slider-percent, 0%),
+    #333 100%
+  );
+}
+
+.orbkit-editor-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.orbkit-editor-slider input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+.orbkit-editor-slider input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(0.95);
+}
+
+.orbkit-editor-slider input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.orbkit-editor-slider input[type="range"]::-moz-range-progress {
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 3px;
+  height: 6px;
+}
+
+.orbkit-editor-slider input[type="range"]::-moz-range-track {
+  background: #2a2a2a;
+  border-radius: 3px;
+  height: 6px;
+}
+
+/* ─── Color picker ─── */
+.orbkit-editor-color-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.orbkit-editor-color-picker input[type="color"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+}
+
+.orbkit-editor-color-picker input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.orbkit-editor-color-picker input[type="color"]::-webkit-color-swatch {
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.orbkit-editor-color-picker input[type="text"] {
+  flex: 1;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 6px 8px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.orbkit-editor-color-picker input[type="text"]:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ─── Select (blend mode) ─── */
+.orbkit-editor-select {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-size: 12px;
+  padding: 6px 8px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+  width: 100%;
+}
+
+.orbkit-editor-select:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* ─── Renderer toggle ─── */
+.orbkit-editor-renderer-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.orbkit-editor-renderer-btn {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #888;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.orbkit-editor-renderer-btn:hover {
+  border-color: #555;
+  color: #ccc;
+  background: #222;
+}
+
+.orbkit-editor-renderer-btn--active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* ─── Buttons ─── */
+.orbkit-editor-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.orbkit-editor-btn:hover {
+  border-color: #555;
+  background: #222;
+}
+
+.orbkit-editor-btn:active {
+  transform: scale(0.97);
+}
+
+.orbkit-editor-btn--randomize {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
+.orbkit-editor-btn--add {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
+/* ─── Toggle group (drift/wavy/interactive) ─── */
+.orbkit-editor-toggle-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.orbkit-editor-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #888;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.orbkit-editor-toggle:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #bbb;
+}
+
+.orbkit-editor-toggle:has(input:checked) {
+  color: #ddd;
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.orbkit-editor-toggle input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1.5px solid #555;
+  background: #1e1e1e;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.orbkit-editor-toggle input[type="checkbox"]:checked {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.85);
+}
+
+.orbkit-editor-toggle input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  left: 3.5px;
+  top: 1px;
+  width: 4px;
+  height: 7px;
+  border: solid #141414;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+/* ─── Field (label + control) ─── */
+.orbkit-editor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ─── Export ─── */
+.orbkit-editor-export-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.orbkit-editor-btn--export,
+.orbkit-editor-btn--download {
+  flex: 1;
+  min-width: 80px;
+  text-align: center;
+  font-size: 11px;
+  padding: 5px 8px;
+}
+
+.orbkit-editor-btn--download {
+  flex-basis: 100%;
+}

@@ -26,6 +26,7 @@ import { Orb } from './orb';
 export function OrbScene({
   background,
   grain,
+  saturation,
   breathing,
   preset,
   renderer = 'css',
@@ -54,7 +55,7 @@ export function OrbScene({
   const resolvedBackground = background ?? presetData?.backgroundColor ?? '#000000';
   const resolvedGrain = grain ?? (presetData ? presetData.grain / 100 : 0);
   const resolvedBreathing = breathing ?? presetData?.breathing ?? 0;
-  const resolvedSaturation = presetData?.saturation ?? 70;
+  const resolvedSaturation = saturation ?? presetData?.saturation ?? 70;
 
   const containerRef = useRef<HTMLElement | null>(null);
 
