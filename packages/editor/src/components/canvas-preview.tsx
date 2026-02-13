@@ -70,6 +70,7 @@ export function CanvasPreview({ state, dispatch }: CanvasPreviewProps): JSX.Elem
             position: [x, y],
             size: 0.6,
             blur: 40,
+            opacity: 0.8,
             blendMode: 'screen',
             drift: true,
             wavy: false,
@@ -107,6 +108,7 @@ export function CanvasPreview({ state, dispatch }: CanvasPreviewProps): JSX.Elem
             drift={orb.drift}
             wavy={orb.wavy}
             interactive={orb.interactive}
+            style={{ opacity: orb.opacity }}
           />
         ))}
       </OrbScene>

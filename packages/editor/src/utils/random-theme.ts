@@ -76,6 +76,7 @@ export function randomizeTheme(): EditorState {
       position: [Math.random() * 0.8 + 0.1, Math.random() * 0.8 + 0.1] as [number, number],
       size: 0.5 + Math.random() * 0.5,
       blur: 30 + Math.random() * 40,
+      opacity: 0.8,
       blendMode: 'screen' as const,
       drift: true,
       wavy: false,

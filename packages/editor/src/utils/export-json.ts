@@ -14,6 +14,7 @@ export function exportJSON(state: EditorState): string {
         position: orb.position,
         size: orb.size,
         blur: orb.blur,
+        opacity: orb.opacity,
         blendMode: orb.blendMode,
         drift: orb.drift,
         wavy: orb.wavy,

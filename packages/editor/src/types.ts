@@ -6,6 +6,7 @@ export interface EditorOrb {
   position: Point;
   size: number;
   blur: number;
+  opacity: number;
   blendMode: BlendMode;
   drift: boolean;
   wavy: boolean;

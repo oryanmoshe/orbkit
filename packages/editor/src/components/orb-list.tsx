@@ -21,6 +21,7 @@ export function OrbList({ orbs, selectedOrbId, dispatch }: OrbListProps): JSX.El
         position: [0.3 + Math.random() * 0.4, 0.3 + Math.random() * 0.4],
         size: 0.5 + Math.random() * 0.3,
         blur: 30 + Math.random() * 30,
+        opacity: 0.8,
         blendMode: 'screen',
         drift: true,
         wavy: false,

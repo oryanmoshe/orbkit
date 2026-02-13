@@ -168,7 +168,7 @@ const [config, setConfig] = useState(DEFAULT_STATE);
 **Features:**
 - Live preview with draggable orb handles
 - Preset gallery with randomize button
-- Per-orb controls: color, size, blur, blend mode, drift/wavy/interactive toggles
+- Per-orb controls: color, size, blur, opacity, blend mode, drift/wavy/interactive toggles
 - Scene controls: background, saturation, grain, breathing, renderer, symmetrical lock
 - Export to JSX, JSON, or CSS with copy-to-clipboard
 - Controlled and uncontrolled modes (like React form inputs)

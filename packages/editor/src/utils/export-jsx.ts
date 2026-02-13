@@ -4,7 +4,9 @@ import type { EditorState } from '../types';
 export function exportJSX(state: EditorState): string {
   const orbLines = state.orbs
     .map((orb) => {
-      let line = `  <Orb color="${orb.color}" position={[${orb.position[0].toFixed(2)}, ${orb.position[1].toFixed(2)}]} size={${orb.size.toFixed(2)}} blur={${Math.round(orb.blur)}} blendMode="${orb.blendMode}"`;
+      let line = `  <Orb color="${orb.color}" position={[${orb.position[0].toFixed(2)}, ${orb.position[1].toFixed(2)}]} size={${orb.size.toFixed(2)}} blur={${Math.round(orb.blur)}}`;
+      if (orb.opacity !== 1) line += ` style={{ opacity: ${orb.opacity.toFixed(2)} }}`;
+      line += ` blendMode="${orb.blendMode}"`;
       if (orb.drift) line += ' drift';
       if (orb.wavy) line += ' wavy';
       if (orb.interactive) line += ' interactive';

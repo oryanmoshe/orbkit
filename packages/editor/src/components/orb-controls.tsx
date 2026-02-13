@@ -48,6 +48,14 @@ export function OrbControls({ orb, dispatch }: OrbControlsProps): JSX.Element {
         onChange={(blur) => update({ blur })}
       />
 
+      <Slider
+        label="Opacity"
+        value={Math.round(orb.opacity * 100)}
+        min={10}
+        max={100}
+        onChange={(v) => update({ opacity: v / 100 })}
+      />
+
       <label className="orbkit-editor-field">
         <span className="orbkit-editor-label">Blend Mode</span>
         <select

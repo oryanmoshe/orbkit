@@ -26,6 +26,7 @@ export function PresetGallery({ dispatch }: PresetGalleryProps): JSX.Element {
             position: pt.position,
             size: pt.radius,
             blur: 40,
+            opacity: 0.8,
             blendMode: 'screen',
             drift: true,
             wavy: false,

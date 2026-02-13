@@ -8,6 +8,7 @@ const makeOrb = (overrides?: Partial<EditorOrb>): EditorOrb => ({
   position: [0.5, 0.5],
   size: 0.75,
   blur: 40,
+  opacity: 0.8,
   blendMode: 'screen',
   drift: true,
   wavy: false,
@@ -153,6 +154,7 @@ describe('editorReducer', () => {
       orbs: [legacyOrb],
     } as EditorState;
     const next = editorReducer(DEFAULT_STATE, { type: 'LOAD_CONFIG', config });
+    expect(next.orbs[0]?.opacity).toBe(0.8);
     expect(next.orbs[0]?.drift).toBe(true);
     expect(next.orbs[0]?.wavy).toBe(false);
     expect(next.orbs[0]?.interactive).toBe(false);

@@ -9,8 +9,10 @@ interface SliderProps {
   onChange: (value: number) => void;
 }
 
-/** Labeled range slider with current value display. */
+/** Labeled range slider with current value display and filled track. */
 export function Slider({ label, value, min, max, step = 1, onChange }: SliderProps): JSX.Element {
+  const percent = ((value - min) / (max - min)) * 100;
+
   return (
     <label className="orbkit-editor-slider">
       <div className="orbkit-editor-slider-header">
@@ -25,6 +27,7 @@ export function Slider({ label, value, min, max, step = 1, onChange }: SliderPro
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         className="orbkit-editor-slider-input"
+        style={{ '--slider-percent': `${percent}%` } as React.CSSProperties}
       />
     </label>
   );

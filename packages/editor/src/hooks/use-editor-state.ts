@@ -78,6 +78,7 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
           const raw = o as unknown as Record<string, unknown>;
           return {
             ...o,
+            opacity: (raw.opacity as number) ?? 0.8,
             drift: (raw.drift as boolean) ?? true,
             wavy: (raw.wavy as boolean) ?? false,
             interactive: (raw.interactive as boolean) ?? false,
