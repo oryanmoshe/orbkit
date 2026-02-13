@@ -98,6 +98,7 @@ export function CanvasPreview({ state, dispatch }: CanvasPreviewProps): JSX.Elem
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.target !== e.currentTarget) return;
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         addOrbAt(0.5, 0.5);

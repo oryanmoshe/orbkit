@@ -25,6 +25,7 @@ export function exportCSS(state: EditorState): string {
       '  left: -15%;',
       `  background: radial-gradient(at ${px.toFixed(0)}% ${py.toFixed(0)}%, ${orb.color} 0%, transparent ${(orb.size * 100).toFixed(0)}%);`,
       `  filter: blur(${Math.round(orb.blur)}px);`,
+      `  opacity: ${orb.opacity};`,
       `  mix-blend-mode: ${orb.blendMode};`,
       '}',
       '',

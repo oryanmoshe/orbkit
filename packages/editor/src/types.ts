@@ -30,6 +30,10 @@ export interface UseDragOptions {
   containerRef: RefObject<HTMLElement | null>;
 }
 
+export interface PresetGalleryProps {
+  dispatch: (action: EditorAction) => void;
+}
+
 export type EditorAction =
   | { type: 'SET_BACKGROUND'; color: string }
   | { type: 'SET_SATURATION'; value: number }

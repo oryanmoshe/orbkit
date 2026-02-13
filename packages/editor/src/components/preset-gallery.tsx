@@ -1,11 +1,7 @@
 import { type Preset, presets } from 'orbkit';
 import type { JSX } from 'react';
-import type { EditorAction, EditorOrb } from '../types';
+import type { EditorOrb, PresetGalleryProps } from '../types';
 import { randomizeTheme } from '../utils/random-theme';
-
-interface PresetGalleryProps {
-  dispatch: (action: EditorAction) => void;
-}
 
 /** Grid of preset thumbnails with randomize button. */
 export function PresetGallery({ dispatch }: PresetGalleryProps): JSX.Element {
