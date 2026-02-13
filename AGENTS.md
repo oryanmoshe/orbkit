@@ -62,7 +62,27 @@ orbkit/
 │   │
 │   └── editor/                # npm: "@orbkit/editor" — optional visual editor
 │       ├── src/
-│       │   └── index.ts             # Stub — not yet implemented
+│       │   ├── index.ts             # Public API exports
+│       │   ├── types.ts             # EditorOrb, EditorState, EditorAction types
+│       │   ├── styles.css           # Default dark theme stylesheet
+│       │   ├── components/
+│       │   │   ├── orb-editor.tsx        # Main editor shell (controlled/uncontrolled)
+│       │   │   ├── canvas-preview.tsx    # Live OrbScene preview + drag handles
+│       │   │   ├── orb-list.tsx          # Orb selection list with add/delete
+│       │   │   ├── orb-controls.tsx      # Color/size/blur/blend controls
+│       │   │   ├── scene-controls.tsx    # Background/saturation/grain/breathing/renderer
+│       │   │   ├── preset-gallery.tsx    # Preset thumbnails + randomize button
+│       │   │   ├── export-panel.tsx      # Copy JSX/JSON/CSS + download
+│       │   │   ├── color-picker.tsx      # Native + hex input hybrid
+│       │   │   └── slider.tsx           # Labeled range slider
+│       │   ├── hooks/
+│       │   │   ├── use-editor-state.ts   # Central reducer + controlled/uncontrolled
+│       │   │   └── use-drag.ts           # Pointer drag interaction
+│       │   └── utils/
+│       │       ├── export-jsx.ts         # Generate JSX string from config
+│       │       ├── export-json.ts        # Serialize config to JSON
+│       │       ├── export-css.ts         # Generate raw CSS
+│       │       └── random-theme.ts       # Random orb scene generator
 │       └── package.json
 │
 └── examples/
@@ -85,6 +105,10 @@ orbkit/
 | `packages/core/src/utils/animation.ts` | Orbit params, drift keyframes, calculateDriftOffset |
 | `packages/core/src/renderers/css-renderer.ts` | CSS rendering: gradient CSS, orb animation generation |
 | `packages/core/src/presets/index.ts` | 5 built-in presets (ocean, sunset, forest, aurora, minimal) + registerPreset() |
+| `packages/editor/src/components/orb-editor.tsx` | Main editor component — controlled (value/onChange) and uncontrolled (defaultValue) |
+| `packages/editor/src/hooks/use-editor-state.ts` | Central useReducer state management with 13 action types |
+| `packages/editor/src/types.ts` | EditorOrb, EditorState, EditorAction type definitions |
+| `packages/editor/src/styles.css` | Default dark theme CSS — import via `@orbkit/editor/styles.css` |
 
 ## Tech Stack
 
@@ -130,6 +154,15 @@ bun test              # Run tests
 - **Preset Resolution**: `<OrbScene preset="ocean" />` looks up preset, auto-renders orb components with drift, auto-injects Grain overlay (CSS only — imperative renderers handle grain internally). Explicit props override preset defaults.
 - **Canvas Renderer**: `createCanvasRenderer()` factory returns an `OrbRenderer`. Single `<canvas>` element, rAF render loop. Orbs drawn as radial gradients with `globalCompositeOperation` for blend modes. Per-orb Gaussian blur via `ctx.filter = 'blur(Npx)'` (DPR-scaled) for soft edges and orb merging that approximates CSS blur. Frame-based drift via `calculateDriftOffset()`. Grain cached on offscreen canvas, composited via `drawImage`. `unmount()` stops the rAF loop before detaching. Not SSR-compatible.
 - **WebGL Renderer**: `createWebGLRenderer()` factory returns an `OrbRenderer`. Single fullscreen triangle with GLSL fragment shader. Simplex noise 3D (Ashima) + FBM for organic edge distortion (conditional per-orb via `u_orbWavy` uniform). Blur controls smoothstep falloff distance (factor 0.035). All 8 blend modes in GLSL. Anti-banding dither (Jimenez). Max 8 orbs (uniform arrays, warns on overflow). WebGL2 with WebGL1 fallback. Falls back to Canvas renderer if WebGL unavailable. `unmount()` stops the rAF loop before detaching. Not SSR-compatible.
+
+### Editor Package (@orbkit/editor)
+
+- **State Management**: `useEditorState` hook wraps `useReducer` with controlled/uncontrolled support. 13 action types (SET_BACKGROUND, ADD_ORB, UPDATE_ORB, MOVE_ORB, APPLY_PRESET, RANDOMIZE, etc.). In controlled mode, dispatch computes next state and calls `onChange`; in uncontrolled mode, dispatch updates internal state directly.
+- **Canvas Preview**: Renders a live `<OrbScene>` with `<Orb>` children and an overlay of absolutely-positioned drag handles. Click on empty area adds a new orb. Drag handles use pointer capture for smooth repositioning.
+- **Preset Gallery**: Uses `presets` Record from core package. Maps `preset.backgroundColor` (not `background`) and `pt.radius` (not `size`). Randomize button dispatches `RANDOMIZE` with `randomizeTheme()`.
+- **Export Panel**: JSX, JSON, and CSS export via copy-to-clipboard. JSON download as file. Exports strip `id` and `selectedOrbId` from state.
+- **Styling**: Zero dependencies. Ships `styles.css` with a polished dark theme. All class names prefixed `orbkit-editor-`. Consumers import `@orbkit/editor/styles.css` or style from scratch.
+- **Package exports**: `@orbkit/editor` for components/hooks/utils, `@orbkit/editor/styles.css` for default styles.
 
 ## Feature Compatibility
 
