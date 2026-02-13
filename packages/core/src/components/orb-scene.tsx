@@ -1,4 +1,4 @@
-import { type JSX, createElement, useEffect, useRef } from 'react';
+import { type JSX, createElement, useEffect, useRef, useState } from 'react';
 import { OrbSceneContext, useOrbSceneProvider } from '../context';
 import { presets } from '../presets';
 import { detectBestRenderer } from '../renderers/detect';
@@ -34,8 +34,19 @@ export function OrbScene({
   as = 'div',
   children,
 }: OrbSceneProps): JSX.Element {
-  // Resolve 'auto' to a concrete renderer type
-  const resolvedRenderer: RendererType = renderer === 'auto' ? detectBestRenderer() : renderer;
+  // Resolve 'auto' — defer detection to useEffect to avoid SSR/CSR hydration mismatch.
+  // SSR and initial client render both use 'css', then useEffect switches to the detected renderer.
+  const [resolvedRenderer, setResolvedRenderer] = useState<RendererType>(
+    renderer === 'auto' ? 'css' : renderer,
+  );
+
+  useEffect(() => {
+    if (renderer === 'auto') {
+      setResolvedRenderer(detectBestRenderer());
+    } else {
+      setResolvedRenderer(renderer);
+    }
+  }, [renderer]);
 
   // Resolve preset
   const presetData = preset ? presets[preset] : null;
