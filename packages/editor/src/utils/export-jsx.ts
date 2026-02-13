@@ -1,0 +1,15 @@
+import type { EditorState } from '../types';
+
+/** Generate a JSX code string from the editor state. */
+export function exportJSX(state: EditorState): string {
+  const orbLines = state.orbs
+    .map(
+      (orb) =>
+        `  <Orb color="${orb.color}" position={[${orb.position[0].toFixed(2)}, ${orb.position[1].toFixed(2)}]} size={${orb.size.toFixed(2)}} blur={${Math.round(orb.blur)}} blendMode="${orb.blendMode}" drift />`,
+    )
+    .join('\n');
+
+  return `<OrbScene background="${state.background}" grain={${(state.grain / 100).toFixed(2)}} breathing={${state.breathing}} saturation={${state.saturation}}>
+${orbLines}
+</OrbScene>`;
+}
