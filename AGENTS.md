@@ -108,7 +108,7 @@ orbkit/
 | `packages/core/src/renderers/css-renderer.ts` | CSS rendering: gradient CSS, orb animation generation |
 | `packages/core/src/presets/index.ts` | 5 built-in presets (ocean, sunset, forest, aurora, minimal) + registerPreset() |
 | `packages/editor/src/components/orb-editor.tsx` | Main editor component — controlled (value/onChange) and uncontrolled (defaultValue) |
-| `packages/editor/src/hooks/use-editor-state.ts` | Central useReducer state management with 13 action types |
+| `packages/editor/src/hooks/use-editor-state.ts` | Central useReducer state management with 15 action types |
 | `packages/editor/src/types.ts` | EditorOrb, EditorState, EditorAction type definitions |
 | `packages/editor/src/styles.css` | Default dark theme CSS — import via `@orbkit/editor/styles.css` |
 
