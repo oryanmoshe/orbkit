@@ -44,10 +44,10 @@ orbkit/
 │   │   │   │   ├── canvas-renderer.ts     # Canvas 2D rendering: rAF loop, radial gradients, SSR-guarded
 │   │   │   │   ├── webgl-renderer.ts      # WebGL rendering: context, uniforms, animation loop
 │   │   │   │   └── shaders/
-│   │   │   │       ├── index.ts           # Shader source exports (vertex + fragment, WebGL1/2)
+│   │   │   │       ├── index.ts           # Thin re-export: imports .glsl files, prepends WebGL1/2 preambles
 │   │   │   │       ├── glsl.d.ts          # TypeScript module declaration for .glsl imports
-│   │   │   │       ├── orb.vert.glsl      # Vertex shader source (reference/syntax highlighting)
-│   │   │   │       └── orb.frag.glsl      # Fragment shader: noise, blend modes, grain, dither
+│   │   │   │       ├── orb.vert.glsl      # Vertex shader (WebGL2, single source of truth)
+│   │   │   │       └── orb.frag.glsl      # Fragment shader body (single source of truth)
 │   │   │   ├── presets/
 │   │   │   │   └── index.ts          # 5 built-in presets + registerPreset()
 │   │   │   └── utils/

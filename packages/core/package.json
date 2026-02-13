@@ -30,8 +30,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "bun run build:esm && bun run build:cjs && bun run build:types",
-    "build:esm": "bun build src/index.ts --outdir dist/esm --format esm --external react --external react-dom",
-    "build:cjs": "bun build src/index.ts --outdir dist/cjs --format cjs --external react --external react-dom",
+    "build:esm": "bun build src/index.ts --outdir dist/esm --format esm --external react --external react-dom --loader .glsl:text",
+    "build:cjs": "bun build src/index.ts --outdir dist/cjs --format cjs --external react --external react-dom --loader .glsl:text",
     "build:types": "tsc --emitDeclarationOnly --outDir dist/types",
     "test": "bun test",
     "typecheck": "tsc --noEmit"

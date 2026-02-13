@@ -1,8 +1,7 @@
-// Fullscreen triangle — covers entire viewport with a single triangle.
-// WebGL2: uses gl_VertexID (no vertex buffer needed).
-// For WebGL1, the host code uses a separate shader with a_position attribute.
-
 #version 300 es
+// Fullscreen triangle — covers entire viewport with a single triangle.
+// Uses gl_VertexID (no vertex buffer needed).
+// For WebGL1, the host code uses a separate shader with a_position attribute.
 
 void main() {
   vec2 pos = vec2(
