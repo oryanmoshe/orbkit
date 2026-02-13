@@ -25,6 +25,7 @@ orbkit/
 │   │   ├── src/
 │   │   │   ├── index.ts             # Public API exports
 │   │   │   ├── types.ts             # All shared TypeScript interfaces
+│   │   │   ├── react.d.ts          # Module augmentation for CSS custom properties
 │   │   │   ├── components/
 │   │   │   │   ├── orb.tsx           # Orb primitive — gradient, blur, drift, wavy, interactive
 │   │   │   │   ├── orb-scene.tsx     # Scene container — context provider, preset resolution
