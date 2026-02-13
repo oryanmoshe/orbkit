@@ -141,6 +141,46 @@ The editor supports both patterns:
 <OrbEditor value={config} onChange={setConfig} />
 ```
 
+### Controlled Mode State Sync
+
+When `value` is provided, the editor operates in **controlled mode**. The internal reducer state must stay in sync with the external `value` prop:
+
+1. **Initialization**: The reducer is initialized from `value` (or `defaultValue` if uncontrolled).
+2. **External updates**: A `useEffect` watches the `value` prop and replaces internal state whenever it changes, using a `LOAD_CONFIG` action.
+3. **Dispatch behavior**: In controlled mode, dispatching an action updates internal state *and* calls `onChange` with the new state. The parent is the source of truth — if the parent doesn't update `value`, the editor reverts on the next render.
+
+```typescript
+function useEditorState(value?: EditorState, defaultValue?: EditorState, onChange?: (state: EditorState) => void) {
+  const [state, dispatch] = useReducer(editorReducer, value ?? defaultValue ?? initialState);
+  const isControlled = value !== undefined;
+
+  // Sync internal state from controlled value prop
+  useEffect(() => {
+    if (isControlled) {
+      dispatch({ type: 'LOAD_CONFIG', config: value });
+    }
+  }, [value, isControlled]);
+
+  // Wrap dispatch to call onChange in controlled mode
+  const stableDispatch = useCallback((action: EditorAction) => {
+    if (isControlled) {
+      // Compute next state and pass to parent; don't update internal state directly
+      const nextState = editorReducer(value, action);
+      onChange?.(nextState);
+    } else {
+      dispatch(action);
+    }
+  }, [isControlled, value, onChange]);
+
+  return [isControlled ? value : state, stableDispatch] as const;
+}
+```
+
+Key rules:
+- **Controlled**: `onChange` is the only way state changes propagate. The reducer is not applied internally -- the parent decides.
+- **Uncontrolled**: Internal `dispatch` applies the reducer directly. `onChange` is not called.
+- **Switching modes** (controlled to uncontrolled or vice versa) at runtime is unsupported and logs a warning, matching React's own convention.
+
 ### Canvas Preview with Drag
 
 The preview renders a live `<OrbScene>` with absolutely positioned drag handles:
