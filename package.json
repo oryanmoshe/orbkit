@@ -4,8 +4,8 @@
   "workspaces": ["packages/*", "examples/*"],
   "scripts": {
     "build": "bun run --filter 'orbkit' build && bun run --filter '@orbkit/editor' build",
-    "test": "bun run --filter 'orbkit' test",
-    "typecheck": "bun run --filter 'orbkit' typecheck && bun run --filter '@orbkit/editor' typecheck",
+    "test": "bun run --filter 'orbkit' test && bun run --filter '@orbkit/editor' test",
+    "typecheck": "bun run --filter 'orbkit' typecheck && bun run --filter 'orbkit' build:types && bun run --filter '@orbkit/editor' typecheck",
     "lint": "bunx @biomejs/biome check .",
     "lint:fix": "bunx @biomejs/biome check --write .",
     "test:e2e": "bunx playwright test --config e2e/playwright.config.ts"
