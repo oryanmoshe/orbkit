@@ -39,9 +39,9 @@ orbkit/
 │   │   │   │   ├── orb-scene-context.test.tsx
 │   │   │   │   └── index.ts              # Re-exports
 │   │   │   ├── renderers/
-│   │   │   │   ├── renderer-interface.ts  # Shared OrbRenderer interface + OrbRenderConfig (fully documented)
+│   │   │   │   ├── renderer-interface.ts  # Re-exports OrbRenderer + OrbRenderConfig from types.ts
 │   │   │   │   ├── css-renderer.ts        # CSS rendering: gradients, keyframes, animation
-│   │   │   │   └── canvas-renderer.ts     # Canvas 2D rendering: rAF loop, radial gradients
+│   │   │   │   └── canvas-renderer.ts     # Canvas 2D rendering: rAF loop, radial gradients, SSR-guarded
 │   │   │   ├── presets/
 │   │   │   │   └── index.ts          # 5 built-in presets + registerPreset()
 │   │   │   └── utils/

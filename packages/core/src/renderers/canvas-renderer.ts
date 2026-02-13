@@ -1,10 +1,9 @@
-import type { BlendMode, OrbitParams } from '../types';
+import type { BlendMode, OrbRenderConfig, OrbRenderer, OrbitParams } from '../types';
 import { calculateDriftOffset, getOrbitParams } from '../utils/animation';
 import { hexToRgba } from '../utils/color';
-import type { OrbRenderConfig, OrbRenderer } from './renderer-interface';
 
 /** Blend mode mapping: CSS mix-blend-mode → Canvas globalCompositeOperation */
-const BLEND_MODE_MAP: Record<BlendMode, GlobalCompositeOperation> = {
+export const BLEND_MODE_MAP: Record<BlendMode, GlobalCompositeOperation> = {
   screen: 'screen',
   multiply: 'multiply',
   overlay: 'overlay',
@@ -14,6 +13,9 @@ const BLEND_MODE_MAP: Record<BlendMode, GlobalCompositeOperation> = {
   lighten: 'lighten',
   normal: 'source-over',
 };
+
+/** Shared zero offset to avoid per-frame allocation for non-drift orbs */
+const ZERO_OFFSET: Readonly<{ x: number; y: number }> = { x: 0, y: 0 };
 
 /** Internal orb with pre-computed values for rendering */
 interface InternalOrb extends OrbRenderConfig {
@@ -40,7 +42,7 @@ export function createCanvasRenderer(): OrbRenderer {
   let orbs: InternalOrb[] = [];
   let background = '#000000';
   let grainIntensity = 0;
-  let cachedGrain: ImageData | null = null;
+  let cachedGrainCanvas: HTMLCanvasElement | null = null;
   let running = false;
 
   function render(time: number) {
@@ -62,7 +64,7 @@ export function createCanvasRenderer(): OrbRenderer {
       // Drift offset
       const driftEnabled =
         orb.drift === true || (typeof orb.drift === 'object' && orb.drift !== null);
-      const offset = driftEnabled ? calculateDriftOffset(orb.orbitParams, time) : { x: 0, y: 0 };
+      const offset = driftEnabled ? calculateDriftOffset(orb.orbitParams, time) : ZERO_OFFSET;
 
       const cx = (orb.position[0] + offset.x) * w;
       const cy = (orb.position[1] + offset.y) * h;
@@ -82,7 +84,7 @@ export function createCanvasRenderer(): OrbRenderer {
       ctx.restore();
     }
 
-    // Grain overlay
+    // Grain overlay — uses drawImage so globalCompositeOperation is respected
     if (grainIntensity > 0) {
       renderGrain(w, h);
     }
@@ -95,19 +97,20 @@ export function createCanvasRenderer(): OrbRenderer {
   function renderGrain(w: number, h: number) {
     if (!ctx) return;
 
-    // Generate and cache grain at current resolution
-    if (!cachedGrain || cachedGrain.width !== w || cachedGrain.height !== h) {
-      cachedGrain = generateGrainData(w, h, grainIntensity);
+    // Generate and cache grain on an offscreen canvas at current resolution
+    if (!cachedGrainCanvas || cachedGrainCanvas.width !== w || cachedGrainCanvas.height !== h) {
+      cachedGrainCanvas = generateGrainCanvas(w, h, grainIntensity);
     }
 
     ctx.globalCompositeOperation = 'overlay';
-    ctx.putImageData(cachedGrain, 0, 0);
+    ctx.drawImage(cachedGrainCanvas, 0, 0);
   }
 
   return {
     type: 'canvas' as const,
 
     mount(container: HTMLElement) {
+      if (typeof document === 'undefined') return;
       canvas = document.createElement('canvas');
       canvas.style.width = '100%';
       canvas.style.height = '100%';
@@ -117,8 +120,9 @@ export function createCanvasRenderer(): OrbRenderer {
 
       // Initial size from container
       const rect = container.getBoundingClientRect();
-      canvas.width = rect.width * devicePixelRatio;
-      canvas.height = rect.height * devicePixelRatio;
+      const dpr = typeof devicePixelRatio !== 'undefined' ? devicePixelRatio : 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
     },
 
     unmount() {
@@ -137,24 +141,28 @@ export function createCanvasRenderer(): OrbRenderer {
 
     setGrain(intensity: number) {
       grainIntensity = intensity;
-      cachedGrain = null; // invalidate cache when intensity changes
+      cachedGrainCanvas = null; // invalidate cache when intensity changes
     },
 
     resize(width: number, height: number) {
       if (!canvas) return;
-      canvas.width = width * devicePixelRatio;
-      canvas.height = height * devicePixelRatio;
-      cachedGrain = null; // invalidate grain cache on resize
+      const dpr = typeof devicePixelRatio !== 'undefined' ? devicePixelRatio : 1;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      cachedGrainCanvas = null; // invalidate grain cache on resize
     },
 
     start() {
+      if (running) return; // idempotent — prevent parallel rAF loops
       running = true;
-      animationId = requestAnimationFrame(render);
+      if (typeof requestAnimationFrame !== 'undefined') {
+        animationId = requestAnimationFrame(render);
+      }
     },
 
     stop() {
       running = false;
-      if (animationId !== null) {
+      if (animationId !== null && typeof cancelAnimationFrame !== 'undefined') {
         cancelAnimationFrame(animationId);
         animationId = null;
       }
@@ -166,14 +174,24 @@ export function createCanvasRenderer(): OrbRenderer {
       canvas = null;
       ctx = null;
       orbs = [];
-      cachedGrain = null;
+      cachedGrainCanvas = null;
     },
   };
 }
 
-/** Generate noise ImageData for grain overlay */
-function generateGrainData(w: number, h: number, intensity: number): ImageData {
-  const imageData = new ImageData(w, h);
+/**
+ * Generate a grain noise pattern on an offscreen canvas.
+ * Using an offscreen canvas (instead of ImageData + putImageData) allows
+ * the grain to be composited via drawImage, which respects globalCompositeOperation.
+ */
+function generateGrainCanvas(w: number, h: number, intensity: number): HTMLCanvasElement {
+  const offscreen = document.createElement('canvas');
+  offscreen.width = w;
+  offscreen.height = h;
+  const offCtx = offscreen.getContext('2d');
+  if (!offCtx) return offscreen;
+
+  const imageData = offCtx.createImageData(w, h);
   const data = imageData.data;
   const alpha = Math.round(intensity * 128);
 
@@ -185,5 +203,6 @@ function generateGrainData(w: number, h: number, intensity: number): ImageData {
     data[i + 3] = alpha;
   }
 
-  return imageData;
+  offCtx.putImageData(imageData, 0, 0);
+  return offscreen;
 }

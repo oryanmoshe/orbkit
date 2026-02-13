@@ -25,7 +25,6 @@ export {
   generateGrainIntensity,
 } from './renderers/css-renderer';
 export { createCanvasRenderer } from './renderers/canvas-renderer';
-export type { OrbRenderer, OrbRenderConfig } from './renderers/renderer-interface';
 
 // Types
 export type {
@@ -42,5 +41,7 @@ export type {
   Preset,
   HslColor,
   OrbitParams,
+  OrbRenderConfig,
+  OrbRenderer,
 } from './types';
 export type { OrbSceneContextValue } from './context';

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'bun:test';
+import type { BlendMode } from '../types';
 import { calculateDriftOffset, getOrbitParams } from '../utils/animation';
 import { hexToRgba } from '../utils/color';
+import { BLEND_MODE_MAP } from './canvas-renderer';
 
 describe('Canvas renderer utilities', () => {
   describe('hexToRgba', () => {
@@ -69,30 +71,24 @@ describe('Canvas renderer utilities', () => {
   });
 
   describe('Blend mode mapping', () => {
-    it('all BlendMode values have canvas equivalents', () => {
-      // Import the blend mode map indirectly by testing the type coverage
-      const cssBlendModes = [
-        'screen',
-        'multiply',
-        'overlay',
-        'hard-light',
-        'soft-light',
-        'color-dodge',
-        'lighten',
-        'normal',
-      ];
-      // These are the expected canvas composite operations
-      const expectedCanvasOps = [
-        'screen',
-        'multiply',
-        'overlay',
-        'hard-light',
-        'soft-light',
-        'color-dodge',
-        'lighten',
-        'source-over',
-      ];
-      expect(cssBlendModes.length).toBe(expectedCanvasOps.length);
+    it('maps all BlendMode values to valid canvas composite operations', () => {
+      const expectedMappings: Record<BlendMode, GlobalCompositeOperation> = {
+        screen: 'screen',
+        multiply: 'multiply',
+        overlay: 'overlay',
+        'hard-light': 'hard-light',
+        'soft-light': 'soft-light',
+        'color-dodge': 'color-dodge',
+        lighten: 'lighten',
+        normal: 'source-over',
+      };
+      for (const [blendMode, expected] of Object.entries(expectedMappings)) {
+        expect(BLEND_MODE_MAP[blendMode as BlendMode]).toBe(expected);
+      }
+    });
+
+    it('covers all 8 supported blend modes', () => {
+      expect(Object.keys(BLEND_MODE_MAP)).toHaveLength(8);
     });
   });
 
