@@ -46,6 +46,16 @@
     ],
     "PreToolUse": [
       {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/issue-workflow.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
         "matcher": "Task",
         "hooks": [
           {

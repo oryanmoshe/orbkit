@@ -33,12 +33,20 @@ commit-msg:
         TYPES="feat|fix|refactor|style|docs|chore|test|perf|ci|build|revert"
         if ! echo "$MSG" | grep -qE "^[^[:alnum:][:space:]]+ ($TYPES): .+"; then
           echo ""
-          echo "❌ Commit must match: <emoji> <type>: <description>"
+          echo "❌ Commit must match: <emoji> <type>: <description> (#<issue>)"
           echo "   Types: feat, fix, refactor, style, docs, chore, test, perf, ci, build, revert"
           echo "   Examples:"
-          echo "     ✨ feat: add orb drift animation"
-          echo "     🐛 fix: correct HSL conversion edge case"
-          echo "     🔧 chore: update biome config"
+          echo "     ✨ feat: add orb drift animation (#3)"
+          echo "     🐛 fix: correct HSL conversion edge case (#12)"
+          echo "     🔧 chore: update biome config (#0)"
+          echo "   Got: $MSG"
+          echo ""
+          exit 1
+        fi
+        if ! echo "$MSG" | grep -qE '\(#[0-9]+\)'; then
+          echo ""
+          echo "❌ Commit must reference a GitHub issue: (#N)"
+          echo "   Use (#0) for commits not tied to an issue."
           echo "   Got: $MSG"
           echo ""
           exit 1
