@@ -1,0 +1,25 @@
+name: Issue Checks
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  assignee:
+    name: Require Issue Assignee
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check issue has assignee
+        env:
+          ASSIGNEES: ${{ join(github.event.issue.assignees.*.login, ',') }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "$ASSIGNEES" ]; then
+            echo "::warning::Issue #$ISSUE_NUMBER has no assignee."
+            gh issue comment "$ISSUE_NUMBER" \
+              --repo "${{ github.repository }}" \
+              --body "⚠️ This issue has no assignee. Please assign someone."
+          else
+            echo "Assignees: $ASSIGNEES"
+          fi

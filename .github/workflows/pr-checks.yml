@@ -1,0 +1,20 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  assignee:
+    name: Require Assignee
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR has assignee
+        env:
+          ASSIGNEES: ${{ join(github.event.pull_request.assignees.*.login, ',') }}
+        run: |
+          if [ -z "$ASSIGNEES" ]; then
+            echo "::error::PR must have at least one assignee."
+            exit 1
+          fi
+          echo "Assignees: $ASSIGNEES"
