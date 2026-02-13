@@ -98,7 +98,7 @@ bun test              # Run tests
 - **Styling**: ZERO dependencies. Vanilla CSS class names only. No CSS-in-JS. Inline styles for dynamic values.
 - **Components**: Named exports (e.g., `export function Orb`). Files are `kebab-case.tsx`.
 - **Hooks**: Default exports. Files are `use-hook-name.ts`.
-- **Types**: Centralized in `types.ts`. Import with `import type`.
+- **Types**: Centralized in `types.ts`. Import with `import type`. CSS custom properties typed via `react.d.ts` module augmentation.
 - **Commits**: Gitmoji + Conventional Commits — `<emoji> <type>: <description> (#<issue>)`. Enforced by lefthook.
 - **Testing**: Bun test runner. SSR-compatible tests use `renderToString`. Test files: `*.test.tsx`.
 - **Docs**: Code changes MUST include doc updates (README.md, AGENTS.md, or .claude/CLAUDE.md). Enforced by pre-commit hook.

@@ -102,17 +102,13 @@ export function Orb({
     : {};
 
   // When both drift + interactive are active, use wrapper div to avoid transform conflicts
-  const orbContent = (
-    <>
-      {wavyEnabled && (
-        <WavyFilter
-          filterId={wavyFilterId}
-          config={wavyConfig}
-          seed={orbIndex >= 0 ? orbIndex * 17 : 0}
-        />
-      )}
-    </>
-  );
+  const orbContent = wavyEnabled ? (
+    <WavyFilter
+      filterId={wavyFilterId}
+      config={wavyConfig}
+      seed={orbIndex >= 0 ? orbIndex * 17 : 0}
+    />
+  ) : null;
 
   const orbStyle = {
     position: 'absolute' as const,
