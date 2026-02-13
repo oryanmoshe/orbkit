@@ -20,9 +20,13 @@ pre-commit:
         done
         if [ "$CODE_CHANGED" = true ] && [ "$DOCS_CHANGED" = false ]; then
           echo ""
-          echo "⚠️  WARNING: Source code changed but no documentation updated."
-          echo "   Consider updating: README.md, AGENTS.md, .claude/CLAUDE.md"
+          echo "❌ BLOCKED: Source code changed but no documentation updated."
+          echo "   You MUST update at least one of: README.md, AGENTS.md, .claude/CLAUDE.md"
+          echo "   - README.md — Public API changes, new features, usage examples"
+          echo "   - AGENTS.md — Architecture changes, new files/directories"
+          echo "   - .claude/CLAUDE.md — Convention changes, new rules"
           echo ""
+          exit 1
         fi
 
 commit-msg:
