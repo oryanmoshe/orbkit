@@ -82,8 +82,9 @@ orbkit/
 │       │       ├── export-jsx.ts         # Generate JSX string from config
 │       │       ├── export-json.ts        # Serialize config to JSON
 │       │       ├── export-css.ts         # Generate raw CSS
-│       │       ├── random-theme.ts       # Random orb scene generator
-│       │       └── symmetry.ts           # Compute symmetrical orb positions for locked/symmetrical mode
+│       │       ├── random-theme.ts       # Random orb scene generator (seeded PRNG)
+│       │       ├── symmetry.ts           # Compute symmetrical orb positions for locked/symmetrical mode
+│       │       └── uid.ts               # Counter-based unique ID generator for orbs
 │       └── package.json
 │
 └── examples/

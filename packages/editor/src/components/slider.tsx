@@ -11,7 +11,7 @@ interface SliderProps {
 
 /** Labeled range slider with current value display and filled track. */
 export function Slider({ label, value, min, max, step = 1, onChange }: SliderProps): JSX.Element {
-  const percent = ((value - min) / (max - min)) * 100;
+  const percent = max !== min ? ((value - min) / (max - min)) * 100 : 0;
 
   return (
     <label className="orbkit-editor-slider">
