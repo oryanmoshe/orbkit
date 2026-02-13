@@ -1,0 +1,17 @@
+{
+  "cli_version": "0.4.3",
+  "checkpoint_id": "6b8d92b19dee",
+  "strategy": "auto-commit",
+  "branch": "docs/project-plans",
+  "checkpoints_count": 0,
+  "files_touched": null,
+  "sessions": [
+    {
+      "metadata": "/6b/8d92b19dee/0/metadata.json",
+      "transcript": "/6b/8d92b19dee/0/full.jsonl",
+      "context": "",
+      "content_hash": "/6b/8d92b19dee/0/content_hash.txt",
+      "prompt": ""
+    }
+  ]
+}
