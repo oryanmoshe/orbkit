@@ -84,3 +84,19 @@ export function applySaturation(hex: string, saturation: number): string {
   const hsl = hexToHsl(hex);
   return hslToHex(hsl.h, saturation, hsl.l);
 }
+
+/**
+ * Convert a hex color string to an rgba() CSS string.
+ * Used by canvas renderer for gradient color stops.
+ * @param hex - Hex color string (#RRGGBB)
+ * @param alpha - Opacity 0-1 (default: 1)
+ */
+export function hexToRgba(hex: string, alpha = 1): string {
+  const cleaned = hex.replace('#', '');
+  if (cleaned.length < 6) return `rgba(0,0,0,${alpha})`;
+  const r = Number.parseInt(cleaned.substring(0, 2), 16);
+  const g = Number.parseInt(cleaned.substring(2, 4), 16);
+  const b = Number.parseInt(cleaned.substring(4, 6), 16);
+  if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) return `rgba(0,0,0,${alpha})`;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
