@@ -109,7 +109,7 @@ bun test              # Run tests
 - **CSS Renderer** (default): Each orb is a `<div>` with `radial-gradient` + `filter: blur()` + `mix-blend-mode`. Drift via CSS `@keyframes` injected into document head. SSR compatible.
 - **Drift Animation**: Deterministic seeded orbits — each orb's path is computed from its position + index. Keyframes are injected/removed via `keyframe-registry.ts` with dedup.
 - **Wavy Filter**: Per-orb inline SVG with `feTurbulence` + `feDisplacementMap`. Animated via SVG `<animate>` (no JS). Uses React `useId()` for SSR-safe unique filter IDs.
-- **Interactive Parallax**: Scene-level `pointermove` listener (rAF-throttled) sets CSS custom properties `--orbkit-mx`/`--orbkit-my` on container. Each interactive orb computes offset via CSS `calc()` — zero React re-renders. When both drift + interactive are active, a wrapper div separates the two transforms. Default intensity: 40%.
+- **Interactive Parallax**: Scene-level `pointermove` listener (rAF-throttled) sets CSS custom properties `--orbkit-mx`/`--orbkit-my` on container. Each interactive orb computes offset via CSS `calc()` — zero React re-renders. When both drift + interactive are active, a wrapper div separates the two transforms. Default intensity: 35%.
 - **Preset Resolution**: `<OrbScene preset="ocean" />` looks up preset, auto-renders orb components with drift, auto-injects Grain overlay. Explicit props override preset defaults.
 - **Canvas Renderer** (planned): Single `<canvas>`, gaussian-blurred circles.
 - **WebGL Renderer** (planned): GLSL fragment shaders, simplex noise for organic effects.
