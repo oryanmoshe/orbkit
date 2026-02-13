@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, ReactNode, RefObject } from 'react';
 
 /** Normalized 2D point [x, y] where both values are 0-1 */
 export type Point = [x: number, y: number];
@@ -133,6 +133,8 @@ export interface OrbSceneContextValue {
   saturation: number;
   /** Register an orb and receive a unique monotonic index for animation staggering */
   registerOrb: () => number;
+  /** Ref to the scene container element for pointer tracking */
+  containerRef: RefObject<HTMLElement | null>;
 }
 
 /** Orbit parameters for drift animation */

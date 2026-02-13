@@ -21,7 +21,7 @@ export function Orb({
   wavy,
   drift,
   renderer: _renderer,
-  interactive: _interactive,
+  interactive,
   className,
   style,
 }: OrbProps): JSX.Element {
@@ -89,31 +89,81 @@ export function Orb({
   // Build filter CSS — combine wavy SVG filter + blur
   const filterCSS = wavyEnabled ? `url(#${wavyFilterId}) blur(${blur}px)` : `blur(${blur}px)`;
 
-  // TODO: Handle interactive hover effects (plan 04)
+  // Interactive parallax — CSS custom properties set by scene, offset computed via calc()
+  const interactiveEnabled = interactive === true;
+  const intensity = 35; // percentage offset at max displacement
+
+  const interactiveStyle = interactiveEnabled
+    ? {
+        transform: `translate(calc((var(--orbkit-mx, 0.5) - ${px}) * ${intensity}%), calc((var(--orbkit-my, 0.5) - ${py}) * ${intensity}%))`,
+        transition: 'transform 0.2s ease-out',
+        willChange: 'transform' as const,
+      }
+    : {};
+
+  // When both drift + interactive are active, use wrapper div to avoid transform conflicts
+  const orbContent = wavyEnabled ? (
+    <WavyFilter
+      filterId={wavyFilterId}
+      config={wavyConfig}
+      seed={orbIndex >= 0 ? orbIndex * 17 : 0}
+    />
+  ) : null;
+
+  const orbStyle = {
+    position: 'absolute' as const,
+    width: '130%',
+    height: '130%',
+    top: '-15%',
+    left: '-15%',
+    background: `radial-gradient(at ${px * 100}% ${py * 100}%, ${color} 0%, transparent ${size * 100}%)`,
+    filter: filterCSS,
+    mixBlendMode: blendMode,
+  };
+
+  // Drift + interactive: outer div for drift animation, inner div carries visuals + parallax
+  if (driftEnabled && interactiveEnabled) {
+    return (
+      <div
+        className="orbkit-orb-drift"
+        style={{
+          position: 'absolute' as const,
+          width: '130%',
+          height: '130%',
+          top: '-15%',
+          left: '-15%',
+          ...animationStyle,
+        }}
+      >
+        <div
+          className={className ? `orbkit-orb ${className}` : 'orbkit-orb'}
+          style={{
+            width: '100%',
+            height: '100%',
+            background: orbStyle.background,
+            filter: orbStyle.filter,
+            mixBlendMode: orbStyle.mixBlendMode,
+            ...interactiveStyle,
+            ...style,
+          }}
+        >
+          {orbContent}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
       className={className ? `orbkit-orb ${className}` : 'orbkit-orb'}
       style={{
-        position: 'absolute',
-        width: '130%',
-        height: '130%',
-        top: '-15%',
-        left: '-15%',
-        background: `radial-gradient(at ${px * 100}% ${py * 100}%, ${color} 0%, transparent ${size * 100}%)`,
-        filter: filterCSS,
-        mixBlendMode: blendMode,
+        ...orbStyle,
         ...animationStyle,
+        ...interactiveStyle,
         ...style,
       }}
     >
-      {wavyEnabled && (
-        <WavyFilter
-          filterId={wavyFilterId}
-          config={wavyConfig}
-          seed={orbIndex >= 0 ? orbIndex * 17 : 0}
-        />
-      )}
+      {orbContent}
     </div>
   );
 }
