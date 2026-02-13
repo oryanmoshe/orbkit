@@ -79,6 +79,7 @@ gh issue create --title "feat: short description" --milestone "Phase 1: Wire Cor
 - **Type**: `feature`, `bug`, `refactor`, `docs`, `dependencies`
 
 ### Milestones
+
 | Milestone | Version | Description |
 |-----------|---------|-------------|
 | Phase 1: Wire Core Features | v0.1.0 | CSS renderer fully functional |
