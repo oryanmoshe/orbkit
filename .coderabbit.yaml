@@ -56,6 +56,22 @@ reviews:
     - "!bun.lock"
 
   path_instructions:
+    - path: "plans/**/*.md"
+      instructions: |
+        These are design/planning documents containing pseudocode examples,
+        NOT production source code. Review for genuine design flaws only:
+        - Architecture mistakes, type system errors, logical contradictions
+        - Incorrect API designs that would cause runtime failures
+        - Missing error handling for critical paths
+        DO NOT flag:
+        - Missing imports in pseudocode snippets
+        - Memoization or performance micro-optimizations
+        - Attribute escaping in example JSX
+        - Style nitpicks, formatting, or documentation completeness
+        - Helper function signatures not being fully defined
+        - Code that would be "better" written a different way
+        These plans will be refined during implementation.
+
     - path: "packages/core/src/**/*.{ts,tsx}"
       instructions: |
         - Strict TypeScript: no `any`, proper generics
