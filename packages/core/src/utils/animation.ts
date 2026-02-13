@@ -86,6 +86,29 @@ export function generateDriftKeyframes(
 }
 
 /**
+ * Calculate the drift offset for a given time (frame-based, for canvas/webgl).
+ * Uses the same elliptical path as CSS keyframes but evaluated per-frame.
+ *
+ * @param params - Pre-computed orbit parameters
+ * @param timeMs - Current time in milliseconds (e.g. from rAF)
+ * @returns Normalized x/y offset (percentage / 100)
+ */
+export function calculateDriftOffset(
+  params: OrbitParams,
+  timeMs: number,
+): { x: number; y: number } {
+  const { amplitudeX, amplitudeY, duration, delay } = params;
+  const timeSec = timeMs / 1000;
+  const t = (((timeSec + delay) % duration) + duration) % duration;
+  const angle = (t / duration) * Math.PI * 2;
+
+  return {
+    x: (Math.cos(angle) * amplitudeX) / 100,
+    y: (Math.sin(angle) * amplitudeY) / 100,
+  };
+}
+
+/**
  * Generate a CSS @keyframes string for an elliptical drift orbit.
  */
 export function generateDriftKeyframeCSS(name: string, ax: number, ay: number): string {
