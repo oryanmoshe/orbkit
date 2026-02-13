@@ -2,7 +2,7 @@ name: Issue Checks
 
 on:
   issues:
-    types: [opened, edited]
+    types: [opened]
 
 jobs:
   assignee:
