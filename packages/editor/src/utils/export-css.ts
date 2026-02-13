@@ -13,11 +13,11 @@ export function exportCSS(state: EditorState): string {
     '',
   ];
 
-  for (const [i, orb] of state.orbs.entries()) {
+  for (const orb of state.orbs) {
     const px = orb.position[0] * 100;
     const py = orb.position[1] * 100;
     lines.push(
-      `.orbkit-orb-${i} {`,
+      `.orbkit-${orb.id} {`,
       '  position: absolute;',
       '  width: 130%;',
       '  height: 130%;',

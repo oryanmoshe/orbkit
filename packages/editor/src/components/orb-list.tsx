@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
 import type { EditorAction, EditorOrb } from '../types';
+import { uid } from '../utils/uid';
 
 interface OrbListProps {
   orbs: EditorOrb[];
@@ -10,11 +11,10 @@ interface OrbListProps {
 /** Orb selection list with color swatches, select, and delete. */
 export function OrbList({ orbs, selectedOrbId, dispatch }: OrbListProps): JSX.Element {
   const addOrb = () => {
-    const id = `orb-${Date.now()}`;
     dispatch({
       type: 'ADD_ORB',
       orb: {
-        id,
+        id: uid(),
         color: `#${Math.floor(Math.random() * 0xffffff)
           .toString(16)
           .padStart(6, '0')}`,

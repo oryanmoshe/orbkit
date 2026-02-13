@@ -2,6 +2,7 @@ import { Orb, OrbScene } from 'orbkit';
 import { type JSX, useCallback, useRef } from 'react';
 import useDrag from '../hooks/use-drag';
 import type { EditorAction, EditorState } from '../types';
+import { uid } from '../utils/uid';
 
 interface DragHandleProps {
   position: [number, number];
@@ -36,6 +37,12 @@ function DragHandle({
         onSelect();
         onPointerDown(e);
       }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
       aria-label={`Drag orb at ${Math.round(px * 100)}%, ${Math.round(py * 100)}%`}
     />
   );
@@ -50,6 +57,29 @@ interface CanvasPreviewProps {
 export function CanvasPreview({ state, dispatch }: CanvasPreviewProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const addOrbAt = useCallback(
+    (x: number, y: number) => {
+      dispatch({
+        type: 'ADD_ORB',
+        orb: {
+          id: uid(),
+          color: `#${Math.floor(Math.random() * 0xffffff)
+            .toString(16)
+            .padStart(6, '0')}`,
+          position: [x, y],
+          size: 0.6,
+          blur: 40,
+          opacity: 0.8,
+          blendMode: 'screen',
+          drift: true,
+          wavy: false,
+          interactive: false,
+        },
+      });
+    },
+    [dispatch],
+  );
+
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
       // Click on empty area to add a new orb
@@ -60,26 +90,20 @@ export function CanvasPreview({ state, dispatch }: CanvasPreviewProps): JSX.Elem
         const rect = e.currentTarget.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width;
         const y = (e.clientY - rect.top) / rect.height;
-        dispatch({
-          type: 'ADD_ORB',
-          orb: {
-            id: `orb-${Date.now()}`,
-            color: `#${Math.floor(Math.random() * 0xffffff)
-              .toString(16)
-              .padStart(6, '0')}`,
-            position: [x, y],
-            size: 0.6,
-            blur: 40,
-            opacity: 0.8,
-            blendMode: 'screen',
-            drift: true,
-            wavy: false,
-            interactive: false,
-          },
-        });
+        addOrbAt(x, y);
       }
     },
-    [dispatch],
+    [addOrbAt],
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        addOrbAt(0.5, 0.5);
+      }
+    },
+    [addOrbAt],
   );
 
   return (
@@ -87,8 +111,11 @@ export function CanvasPreview({ state, dispatch }: CanvasPreviewProps): JSX.Elem
       ref={containerRef}
       className="orbkit-editor-canvas"
       onClick={handleClick}
-      onKeyDown={undefined}
-      role="presentation"
+      onKeyDown={handleKeyDown}
+      // biome-ignore lint/a11y/useSemanticElements: canvas area acts as both container and click target
+      role="button"
+      tabIndex={0}
+      aria-label="Click to add a new orb"
     >
       <OrbScene
         background={state.background}

@@ -125,10 +125,10 @@ describe('exportCSS', () => {
     expect(css).toContain('background: #0a0a0a');
   });
 
-  test('generates class per orb', () => {
+  test('generates class per orb using orb id', () => {
     const css = exportCSS(SAMPLE_STATE);
-    expect(css).toContain('.orbkit-orb-0');
     expect(css).toContain('.orbkit-orb-1');
+    expect(css).toContain('.orbkit-orb-2');
   });
 
   test('includes radial-gradient with position', () => {

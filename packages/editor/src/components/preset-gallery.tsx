@@ -65,7 +65,7 @@ export function PresetGallery({ dispatch }: PresetGalleryProps): JSX.Element {
           >
             {preset.points.map((pt) => (
               <span
-                key={`${pt.color}-${pt.position[0]}-${pt.position[1]}`}
+                key={`${name}-${pt.id}`}
                 className="orbkit-editor-preset-dot"
                 style={{
                   backgroundColor: pt.color,

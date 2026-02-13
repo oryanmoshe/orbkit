@@ -1,4 +1,4 @@
-import type { JSX } from 'react';
+import { type JSX, useMemo } from 'react';
 import useEditorState from '../hooks/use-editor-state';
 import type { EditorState } from '../types';
 import { CanvasPreview } from './canvas-preview';
@@ -33,9 +33,10 @@ export function OrbEditor({
 }: OrbEditorProps): JSX.Element {
   const [state, dispatch] = useEditorState(value, defaultValue, onChange);
 
-  const selectedOrb = state.selectedOrbId
-    ? state.orbs.find((o) => o.id === state.selectedOrbId)
-    : undefined;
+  const selectedOrb = useMemo(
+    () => (state.selectedOrbId ? state.orbs.find((o) => o.id === state.selectedOrbId) : undefined),
+    [state.selectedOrbId, state.orbs],
+  );
 
   return (
     <div className={className ? `orbkit-editor ${className}` : 'orbkit-editor'}>

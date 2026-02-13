@@ -22,7 +22,7 @@ interface OrbControlsProps {
 
 /** Controls for the currently selected orb: color, size, blur, blend mode. */
 export function OrbControls({ orb, dispatch }: OrbControlsProps): JSX.Element {
-  const update = (changes: Partial<EditorOrb>) => {
+  const update = (changes: Partial<Omit<EditorOrb, 'id'>>) => {
     dispatch({ type: 'UPDATE_ORB', id: orb.id, changes });
   };
 

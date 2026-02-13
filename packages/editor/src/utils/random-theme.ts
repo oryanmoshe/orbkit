@@ -15,10 +15,21 @@ const BACKGROUNDS = [
   '#3B2F20',
 ];
 
-function randomHex(): string {
-  const h = Math.floor(Math.random() * 360);
-  const s = 40 + Math.floor(Math.random() * 60); // 40-100
-  const l = 30 + Math.floor(Math.random() * 40); // 30-70
+/** Simple seeded PRNG (mulberry32). */
+function createRng(seed: number) {
+  let s = seed | 0;
+  return () => {
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function randomHex(rng: () => number): string {
+  const h = Math.floor(rng() * 360);
+  const s = 40 + Math.floor(rng() * 60); // 40-100
+  const l = 30 + Math.floor(rng() * 40); // 30-70
   return hslToHex(h, s, l);
 }
 
@@ -59,23 +70,24 @@ function hslToHex(h: number, s: number, l: number): string {
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
 }
 
-/** Generate a random orb scene configuration. */
-export function randomizeTheme(): EditorState {
-  const count = 3 + Math.floor(Math.random() * 3); // 3-5 orbs
-  const bg = BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)] ?? '#0a0a0a';
+/** Generate a random orb scene configuration. Accepts an optional seed for deterministic output. */
+export function randomizeTheme(seed?: number): EditorState {
+  const rng = createRng(seed ?? Date.now() ^ (Math.random() * 0xffffffff));
+  const count = 3 + Math.floor(rng() * 3); // 3-5 orbs
+  const bg = BACKGROUNDS[Math.floor(rng() * BACKGROUNDS.length)] ?? '#0a0a0a';
 
   return {
     background: bg,
-    saturation: 50 + Math.floor(Math.random() * 40),
-    grain: 20 + Math.floor(Math.random() * 30),
-    breathing: 15 + Math.floor(Math.random() * 35),
+    saturation: 50 + Math.floor(rng() * 40),
+    grain: 20 + Math.floor(rng() * 30),
+    breathing: 15 + Math.floor(rng() * 35),
     locked: false,
     orbs: Array.from({ length: count }, (_, i) => ({
       id: `orb-${i}`,
-      color: randomHex(),
-      position: [Math.random() * 0.8 + 0.1, Math.random() * 0.8 + 0.1] as [number, number],
-      size: 0.5 + Math.random() * 0.5,
-      blur: 30 + Math.random() * 40,
+      color: randomHex(rng),
+      position: [rng() * 0.8 + 0.1, rng() * 0.8 + 0.1] as [number, number],
+      size: 0.5 + rng() * 0.5,
+      blur: 30 + rng() * 40,
       opacity: 0.8,
       blendMode: 'screen' as const,
       drift: true,

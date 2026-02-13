@@ -1,4 +1,5 @@
 import type { BlendMode, Point, RendererType } from 'orbkit';
+import type { RefObject } from 'react';
 
 export interface EditorOrb {
   id: string;
@@ -24,6 +25,11 @@ export interface EditorState {
   renderer: RendererType;
 }
 
+export interface UseDragOptions {
+  onDrag: (position: Point) => void;
+  containerRef: RefObject<HTMLElement | null>;
+}
+
 export type EditorAction =
   | { type: 'SET_BACKGROUND'; color: string }
   | { type: 'SET_SATURATION'; value: number }
@@ -33,7 +39,7 @@ export type EditorAction =
   | { type: 'SELECT_ORB'; id: string | null }
   | { type: 'ADD_ORB'; orb: EditorOrb }
   | { type: 'REMOVE_ORB'; id: string }
-  | { type: 'UPDATE_ORB'; id: string; changes: Partial<EditorOrb> }
+  | { type: 'UPDATE_ORB'; id: string; changes: Partial<Omit<EditorOrb, 'id'>> }
   | { type: 'MOVE_ORB'; id: string; position: Point }
   | { type: 'SET_LOCKED'; locked: boolean }
   | { type: 'MOVE_ORB_LOCKED'; id: string; position: Point }

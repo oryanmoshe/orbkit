@@ -154,7 +154,7 @@ registerPreset({
 `@orbkit/editor` provides a drop-in visual editor for designing orb scenes.
 
 ```tsx
-import { OrbEditor } from '@orbkit/editor';
+import { OrbEditor, DEFAULT_STATE } from '@orbkit/editor';
 import '@orbkit/editor/styles.css';
 
 // Uncontrolled — internal state

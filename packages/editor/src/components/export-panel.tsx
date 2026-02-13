@@ -1,4 +1,4 @@
-import { type JSX, useCallback, useState } from 'react';
+import { type JSX, useCallback, useEffect, useRef, useState } from 'react';
 import type { EditorState } from '../types';
 import { exportCSS } from '../utils/export-css';
 import { exportJSON } from '../utils/export-json';
@@ -13,6 +13,13 @@ interface ExportPanelProps {
 /** Export panel with copy-to-clipboard buttons for JSX, JSON, and CSS. */
 export function ExportPanel({ state }: ExportPanelProps): JSX.Element {
   const [copiedFormat, setCopiedFormat] = useState<ExportFormat | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   const getExport = useCallback(
     (format: ExportFormat): string => {
@@ -31,10 +38,16 @@ export function ExportPanel({ state }: ExportPanelProps): JSX.Element {
   const handleCopy = useCallback(
     (format: ExportFormat) => {
       const text = getExport(format);
-      navigator.clipboard.writeText(text).then(() => {
-        setCopiedFormat(format);
-        setTimeout(() => setCopiedFormat(null), 2000);
-      });
+      navigator.clipboard.writeText(text).then(
+        () => {
+          setCopiedFormat(format);
+          if (timerRef.current) clearTimeout(timerRef.current);
+          timerRef.current = setTimeout(() => setCopiedFormat(null), 2000);
+        },
+        () => {
+          // Clipboard write failed (permissions or insecure context)
+        },
+      );
     },
     [getExport],
   );
