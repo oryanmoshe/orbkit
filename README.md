@@ -148,12 +148,38 @@ registerPreset({
 <OrbScene preset="custom" />
 ```
 
+## Editor
+
+`@orbkit/editor` provides a drop-in visual editor for designing orb scenes.
+
+```tsx
+import { OrbEditor } from '@orbkit/editor';
+import '@orbkit/editor/styles.css';
+
+// Uncontrolled — internal state
+<OrbEditor />
+
+// Controlled — external state
+const [config, setConfig] = useState(DEFAULT_STATE);
+<OrbEditor value={config} onChange={setConfig} />
+```
+
+**Features:**
+- Live preview with draggable orb handles
+- Preset gallery with randomize button
+- Per-orb controls: color, size, blur, blend mode
+- Scene controls: background, saturation, grain, breathing, renderer
+- Export to JSX, JSON, or CSS with copy-to-clipboard
+- Controlled and uncontrolled modes (like React form inputs)
+
+Individual components (`CanvasPreview`, `OrbControls`, `SceneControls`, `PresetGallery`, `ExportPanel`, `OrbList`) are also exported for custom editor layouts.
+
 ## Packages
 
 | Package | npm | Description |
 |---------|-----|-------------|
 | `orbkit` | [![npm](https://img.shields.io/npm/v/orbkit)](https://www.npmjs.com/package/orbkit) | Core library — components, renderers, presets |
-| `@orbkit/editor` | [![npm](https://img.shields.io/npm/v/@orbkit/editor)](https://www.npmjs.com/package/@orbkit/editor) | Optional visual editor (coming soon) |
+| `@orbkit/editor` | [![npm](https://img.shields.io/npm/v/@orbkit/editor)](https://www.npmjs.com/package/@orbkit/editor) | Visual editor for designing orb scenes |
 
 ## Development
 
