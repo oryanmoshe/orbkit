@@ -163,6 +163,7 @@ export interface OrbRenderConfig {
   blendMode: BlendMode;
   drift: boolean | DriftConfig;
   wavy: boolean | WavyConfig;
+  interactive: boolean;
 }
 
 /** Common interface for all rendering backends (CSS, Canvas, WebGL) */
@@ -179,6 +180,8 @@ export interface OrbRenderer {
   setBackground(color: string): void;
   /** Set the grain noise overlay intensity (0-1) */
   setGrain(intensity: number): void;
+  /** Update pointer position for interactive parallax (normalized 0-1) */
+  setPointerPosition(x: number, y: number): void;
   /** Resize the rendering surface to new dimensions */
   resize(width: number, height: number): void;
   /** Start the render loop */

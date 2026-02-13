@@ -68,6 +68,7 @@ export function OrbScene({
   });
 
   // Scene-level pointer tracking — sets CSS custom properties for interactive orbs
+  const imperativeRendererRef = contextValue.imperativeRendererRef;
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -80,8 +81,11 @@ export function OrbScene({
         const rect = container.getBoundingClientRect();
         const mx = (e.clientX - rect.left) / rect.width;
         const my = (e.clientY - rect.top) / rect.height;
+        // CSS renderer: update custom properties
         container.style.setProperty('--orbkit-mx', String(mx));
         container.style.setProperty('--orbkit-my', String(my));
+        // Imperative renderers: update pointer position directly
+        imperativeRendererRef.current?.setPointerPosition(mx, my);
         rafId = null;
       });
     };
@@ -93,6 +97,8 @@ export function OrbScene({
       }
       container.style.setProperty('--orbkit-mx', '0.5');
       container.style.setProperty('--orbkit-my', '0.5');
+      // Reset imperative renderer pointer to center
+      imperativeRendererRef.current?.setPointerPosition(0.5, 0.5);
     };
 
     container.addEventListener('pointermove', handlePointerMove);
@@ -103,7 +109,7 @@ export function OrbScene({
       container.removeEventListener('pointerleave', handlePointerLeave);
       if (rafId) cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [imperativeRendererRef]);
 
   // Auto-generate orbs from preset
   const presetOrbs = presetData?.points.map((point, index) => (

@@ -107,6 +107,8 @@ export function createWebGLRenderer(): OrbRenderer {
   let orbs: InternalOrb[] = [];
   let background: [number, number, number] = [0, 0, 0];
   let grainIntensity = 0;
+  let pointerX = 0.5;
+  let pointerY = 0.5;
 
   // Uniform locations (set after program link)
   let uResolution: WebGLUniformLocation | null = null;
@@ -119,6 +121,7 @@ export function createWebGLRenderer(): OrbRenderer {
   const uOrbSizes: (WebGLUniformLocation | null)[] = [];
   const uOrbBlurs: (WebGLUniformLocation | null)[] = [];
   const uOrbBlendModes: (WebGLUniformLocation | null)[] = [];
+  const uOrbWavy: (WebGLUniformLocation | null)[] = [];
 
   // WebGL1 needs a vertex buffer for the fullscreen triangle
   let vao: WebGLVertexArrayObject | null = null;
@@ -157,6 +160,7 @@ export function createWebGLRenderer(): OrbRenderer {
       uOrbSizes[i] = gl.getUniformLocation(program, `u_orbSizes[${i}]`);
       uOrbBlurs[i] = gl.getUniformLocation(program, `u_orbBlurs[${i}]`);
       uOrbBlendModes[i] = gl.getUniformLocation(program, `u_orbBlendModes[${i}]`);
+      uOrbWavy[i] = gl.getUniformLocation(program, `u_orbWavy[${i}]`);
     }
 
     return true;
@@ -196,6 +200,8 @@ export function createWebGLRenderer(): OrbRenderer {
       gl.uniform1f(uOrbSizes[i] ?? null, orb.size);
       gl.uniform1f(uOrbBlurs[i] ?? null, orb.blur);
       gl.uniform1i(uOrbBlendModes[i] ?? null, orb.blendModeIndex);
+      const wavyEnabled = orb.wavy === true || (typeof orb.wavy === 'object' && orb.wavy !== null);
+      gl.uniform1i(uOrbWavy[i] ?? null, wavyEnabled ? 1 : 0);
     }
   }
 
@@ -219,10 +225,14 @@ export function createWebGLRenderer(): OrbRenderer {
       const driftEnabled =
         orb.drift === true || (typeof orb.drift === 'object' && orb.drift !== null);
       const offset = driftEnabled ? calculateDriftOffset(orb.orbitParams, time) : ZERO_OFFSET;
+      // Interactive parallax offset
+      const interactiveIntensity = 0.35;
+      const ix = orb.interactive ? (pointerX - orb.position[0]) * interactiveIntensity : 0;
+      const iy = orb.interactive ? (pointerY - orb.position[1]) * interactiveIntensity : 0;
       gl.uniform2f(
         uOrbPositions[i] ?? null,
-        orb.position[0] + offset.x,
-        orb.position[1] + offset.y,
+        orb.position[0] + offset.x + ix,
+        orb.position[1] + offset.y + iy,
       );
     }
 
@@ -313,6 +323,11 @@ export function createWebGLRenderer(): OrbRenderer {
 
     setGrain(intensity: number) {
       grainIntensity = intensity;
+    },
+
+    setPointerPosition(x: number, y: number) {
+      pointerX = x;
+      pointerY = y;
     },
 
     resize(width: number, height: number) {
