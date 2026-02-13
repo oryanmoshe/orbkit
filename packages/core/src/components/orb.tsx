@@ -1,8 +1,9 @@
-import { type JSX, useEffect, useMemo, useState } from 'react';
+import { type JSX, useEffect, useId, useMemo, useState } from 'react';
 import { useOrbSceneContext } from '../context';
 import { generateOrbAnimation } from '../renderers/css-renderer';
-import type { OrbProps } from '../types';
+import type { OrbProps, WavyConfig } from '../types';
 import { injectKeyframes, removeKeyframes } from '../utils/keyframe-registry';
+import { WavyFilter } from './wavy-filter';
 
 /**
  * Orb — An individual animated orb primitive.
@@ -17,7 +18,7 @@ export function Orb({
   size = 0.75,
   blur = 40,
   blendMode = 'screen',
-  wavy: _wavy,
+  wavy,
   drift,
   renderer: _renderer,
   interactive: _interactive,
@@ -25,6 +26,7 @@ export function Orb({
   style,
 }: OrbProps): JSX.Element {
   const scene = useOrbSceneContext();
+  const instanceId = useId();
   const [orbIndex, setOrbIndex] = useState(-1);
 
   // Register with scene on mount to get a monotonic index
@@ -78,7 +80,15 @@ export function Orb({
     };
   }, [animationProps]);
 
-  // TODO: Apply wavy SVG filter (plan 03)
+  // Resolve wavy config
+  const wavyEnabled = wavy === true || (typeof wavy === 'object' && wavy !== null);
+  const wavyConfig: WavyConfig = typeof wavy === 'object' && wavy !== null ? wavy : {};
+  // useId() provides stable unique IDs that work in both SSR and client
+  const wavyFilterId = wavyEnabled ? `orbkit-wavy-${instanceId.replace(/:/g, '')}` : '';
+
+  // Build filter CSS — combine wavy SVG filter + blur
+  const filterCSS = wavyEnabled ? `url(#${wavyFilterId}) blur(${blur}px)` : `blur(${blur}px)`;
+
   // TODO: Handle interactive hover effects (plan 04)
 
   return (
@@ -91,11 +101,19 @@ export function Orb({
         top: '-15%',
         left: '-15%',
         background: `radial-gradient(at ${px * 100}% ${py * 100}%, ${color} 0%, transparent ${size * 100}%)`,
-        filter: `blur(${blur}px)`,
+        filter: filterCSS,
         mixBlendMode: blendMode,
         ...animationStyle,
         ...style,
       }}
-    />
+    >
+      {wavyEnabled && (
+        <WavyFilter
+          filterId={wavyFilterId}
+          config={wavyConfig}
+          seed={orbIndex >= 0 ? orbIndex * 17 : 0}
+        />
+      )}
+    </div>
   );
 }
