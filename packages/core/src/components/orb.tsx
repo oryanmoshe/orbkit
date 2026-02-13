@@ -91,7 +91,7 @@ export function Orb({
 
   // Interactive parallax — CSS custom properties set by scene, offset computed via calc()
   const interactiveEnabled = interactive === true;
-  const intensity = 15; // percentage offset at max displacement
+  const intensity = 40; // percentage offset at max displacement
 
   const interactiveStyle = interactiveEnabled
     ? {

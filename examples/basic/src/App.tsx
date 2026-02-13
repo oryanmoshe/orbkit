@@ -50,7 +50,7 @@ export function App() {
         <OrbScene preset={preset} style={{ position: 'absolute', inset: 0 }} />
       )}
 
-      {/* UI overlay */}
+      {/* UI overlay — pointer-events: none so OrbScene receives pointermove */}
       <div
         style={{
           position: 'relative',
@@ -59,9 +59,10 @@ export function App() {
           display: 'flex',
           flexDirection: 'column',
           height: '100%',
+          pointerEvents: 'none',
         }}
       >
-        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', pointerEvents: 'auto' }}>
           {presetNames.map((name) => (
             <button
               type="button"
