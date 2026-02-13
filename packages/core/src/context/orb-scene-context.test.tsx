@@ -2,7 +2,8 @@ import { describe, expect, it } from 'bun:test';
 import { renderToString } from 'react-dom/server';
 import { Orb } from '../components/orb';
 import { OrbScene } from '../components/orb-scene';
-import { type OrbSceneContextValue, useOrbSceneContext } from './orb-scene-context';
+import type { OrbSceneContextValue } from '../types';
+import { useOrbSceneContext } from './orb-scene-context';
 
 describe('OrbScene context', () => {
   it('renders children inside the scene', () => {

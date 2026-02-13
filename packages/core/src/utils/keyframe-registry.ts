@@ -6,6 +6,7 @@ const injectedKeyframes = new Set<string>();
  * Deduplicates by animation name. No-op during SSR.
  */
 export function injectKeyframes(name: string, css: string): void {
+  if (!name.trim() || !css.trim()) return;
   if (injectedKeyframes.has(name)) return;
   if (typeof document === 'undefined') return;
 
@@ -20,6 +21,7 @@ export function injectKeyframes(name: string, css: string): void {
  * Remove a previously injected @keyframes rule from the document.
  */
 export function removeKeyframes(name: string): void {
+  if (!name.trim()) return;
   if (typeof document === 'undefined') return;
 
   const el = document.querySelector(`style[data-orbkit="${name}"]`);

@@ -1,16 +1,5 @@
 import { createContext, useCallback, useContext, useRef } from 'react';
-import type { RendererType } from '../types';
-
-/** Scene-level values provided to child Orb components via context */
-export interface OrbSceneContextValue {
-  background: string;
-  grain: number;
-  breathing: number;
-  renderer: RendererType;
-  saturation: number;
-  /** Register an orb and receive a unique monotonic index for animation staggering */
-  registerOrb: () => number;
-}
+import type { OrbSceneContextValue, RendererType } from '../types';
 
 const OrbSceneContext = createContext<OrbSceneContextValue | null>(null);
 OrbSceneContext.displayName = 'OrbSceneContext';

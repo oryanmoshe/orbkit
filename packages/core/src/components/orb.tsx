@@ -63,7 +63,8 @@ export function Orb({
     );
 
     injectKeyframes(animationName, keyframeCSS);
-    setAnimationProps({ animationName, duration: duration / driftSpeed, delay });
+    const safeDriftSpeed = driftSpeed > 0 ? driftSpeed : 1;
+    setAnimationProps({ animationName, duration: duration / safeDriftSpeed, delay });
 
     return () => removeKeyframes(animationName);
   }, [driftEnabled, driftSpeed, orbIndex, resolvedBreathing, px, py, color, size]);

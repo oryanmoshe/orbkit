@@ -16,6 +16,7 @@
 - `packages/editor` → npm: `@orbkit/editor`
 
 ## Commands
+
 - **Build**: `bun build`
 - **Test**: `bun test`
 - **Typecheck**: `bun run typecheck`
