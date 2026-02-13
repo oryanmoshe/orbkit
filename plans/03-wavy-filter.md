@@ -42,6 +42,7 @@ Use SVG `<feTurbulence>` + `<feDisplacementMap>` filters applied per-orb. This i
 CSS can't animate `feTurbulence` properties directly. Options:
 
 1. **`<animate>` SVG element** — Animate `baseFrequency` over time using SVG's built-in animation:
+
    ```xml
    <feTurbulence baseFrequency="0.015" ...>
      <animate

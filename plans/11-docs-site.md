@@ -36,7 +36,7 @@ Given OrbKit is a visual library, a custom docs site might showcase it better th
 
 ## Site Structure
 
-```
+```text
 docs.orbkit.dev (or orbkit.dev/docs)
 ├── /                        — Landing page with live orb background
 ├── /docs
@@ -161,15 +161,17 @@ The landing page IS the product demo:
 Instead of Storybook (heavy, complex config), consider:
 
 ### Ladle
+
 - Lightweight Storybook alternative built on Vite
 - React-only, fast HMR
 - Stories format compatible with Storybook
 - Much simpler config
 
 ### Custom Component Gallery
+
 Since OrbKit is visual, a custom gallery page in the docs might work better:
 
-```
+```text
 /docs/gallery
   - Grid of preset thumbnails (live-rendered, not images)
   - Click to expand into full-screen with controls
@@ -180,7 +182,7 @@ This is more compelling than Storybook's dev-focused UI.
 
 ## Project Structure
 
-```
+```text
 docs/
   package.json
   next.config.ts (or fumadocs config)

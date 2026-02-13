@@ -22,6 +22,7 @@ All renderers should conform to a common interface:
 
 ```typescript
 interface OrbRenderer {
+  readonly type: RendererType;
   mount(container: HTMLElement): void;
   unmount(): void;
   setOrbs(orbs: OrbRenderConfig[]): void;

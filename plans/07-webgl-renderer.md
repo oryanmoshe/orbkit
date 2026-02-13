@@ -41,7 +41,7 @@ If raw WebGL proves too verbose, OGL is the fallback — it's lightweight and pr
 
 Single fullscreen quad with a fragment shader that computes all orbs:
 
-```
+```text
 Vertex Shader: Fullscreen triangle (3 vertices, no buffers needed with WebGL2)
 Fragment Shader: For each pixel:
   1. For each orb: compute distance from pixel to orb center

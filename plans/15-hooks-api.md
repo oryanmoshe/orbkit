@@ -132,12 +132,14 @@ export default function useOrbScene(options: UseOrbSceneOptions = {}): OrbSceneC
   const [state, dispatch] = useReducer(orbSceneReducer, options, initState);
   const containerRef = useRef<HTMLElement | null>(null);
   const rendererRef = useRef<OrbRenderer | null>(null);
+  const currentRendererType = useRef<RendererType>(state.renderer);
 
   // Ref callback for mounting
   const ref = useCallback((el: HTMLElement | null) => {
     if (el && !rendererRef.current) {
       const renderer = createRenderer(state.renderer, el);
       rendererRef.current = renderer;
+      currentRendererType.current = state.renderer;
       renderer.start();
     }
     containerRef.current = el;
@@ -152,12 +154,13 @@ export default function useOrbScene(options: UseOrbSceneOptions = {}): OrbSceneC
     if (!el) return;
 
     // If the renderer type hasn't changed, nothing to do
-    if (rendererRef.current?.type === state.renderer) return;
+    if (currentRendererType.current === state.renderer) return;
 
     // Destroy the old renderer before creating the new one
     rendererRef.current?.destroy();
     const renderer = createRenderer(state.renderer, el);
     rendererRef.current = renderer;
+    currentRendererType.current = state.renderer;
     renderer.start();
 
     return () => {

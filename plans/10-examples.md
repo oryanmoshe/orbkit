@@ -10,7 +10,7 @@ The `examples/basic` directory has only a `package.json` — no source files, no
 
 Minimal Vite + React app demonstrating core usage:
 
-```
+```text
 examples/basic/
   index.html
   vite.config.ts
@@ -61,7 +61,7 @@ function App() {
 
 Demonstrates all features:
 
-```
+```text
 examples/advanced/
   index.html
   vite.config.ts
@@ -82,7 +82,7 @@ examples/advanced/
 
 Demonstrates the `@orbkit/editor` package:
 
-```
+```text
 examples/with-editor/
   index.html
   vite.config.ts
@@ -96,7 +96,7 @@ examples/with-editor/
 
 Next.js App Router example demonstrating SSR support:
 
-```
+```text
 examples/nextjs/
   package.json
   next.config.ts

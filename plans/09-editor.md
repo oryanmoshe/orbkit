@@ -27,24 +27,28 @@ const sceneRef = useRef();
 Based on DreamTeam.io source and modern design tool patterns:
 
 ### 1. Preset Gallery
+
 - Grid of preset thumbnails (mini preview of each preset)
 - Click to apply preset as starting point
 - Custom presets section (user-saved)
 - "Randomize" button — generates random orb configuration
 
 ### 2. Canvas Preview
+
 - Live rendering of the orb scene
 - Draggable point handles for each orb (reposition by drag)
 - Click empty area to add new orb
 - Visual feedback: selected orb highlighted
 
 ### 3. Orb List / Selection
+
 - List of current orbs with color swatch + name
 - Click to select, drag to reorder
 - Delete button per orb
 - "Add orb" button
 
 ### 4. Selected Orb Controls
+
 - **Color picker** — hex input + visual picker
 - **Position** — X/Y sliders (or drag on canvas)
 - **Size** — slider (0.1-1.0)
@@ -52,6 +56,7 @@ Based on DreamTeam.io source and modern design tool patterns:
 - **Blend mode** — dropdown (screen, overlay, multiply, hard-light, soft-light, color-dodge)
 
 ### 5. Scene Controls
+
 - **Background color** — picker + preset swatches (12 dark colors from DreamTeam)
 - **Saturation** — slider (0-100)
 - **Grain** — slider (0-100)
@@ -59,6 +64,7 @@ Based on DreamTeam.io source and modern design tool patterns:
 - **Renderer** — toggle (CSS / Canvas / WebGL)
 
 ### 6. Export
+
 - **Copy JSX** — generates `<OrbScene>` + `<Orb>` code
 - **Copy JSON** — config object for programmatic use
 - **Copy CSS** — raw CSS variables/gradients for non-React use
@@ -288,7 +294,7 @@ ${orbLines}
 
 Zero styling dependencies per project rules. The editor ships CSS class names:
 
-```
+```css
 .orbkit-editor { }
 .orbkit-editor-preview { }
 .orbkit-editor-controls { }
