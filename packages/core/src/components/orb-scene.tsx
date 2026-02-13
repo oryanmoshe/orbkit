@@ -1,3 +1,4 @@
+import type React from 'react';
 import { type JSX, createElement, useEffect, useRef } from 'react';
 import { OrbSceneContext, useOrbSceneProvider } from '../context';
 import { presets } from '../presets';
@@ -113,7 +114,7 @@ export function OrbScene({
             '--orbkit-mx': '0.5',
             '--orbkit-my': '0.5',
             ...style,
-          },
+          } as React.CSSProperties,
         },
         presetOrbs,
         children,

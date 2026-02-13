@@ -5,7 +5,7 @@ const presetNames = ['ocean', 'sunset', 'forest', 'aurora', 'minimal'] as const;
 
 export function App() {
   const [preset, setPreset] = useState<string>('ocean');
-  const [showCustom, setShowCustom] = useState(false);
+  const [showCustom, setShowCustom] = useState(true);
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh' }}>
@@ -17,33 +17,25 @@ export function App() {
           breathing={30}
           style={{ position: 'absolute', inset: 0 }}
         >
-          <Orb
-            color="#7C3AED"
-            position={[0.15, 0.2]}
-            size={0.85}
-            blur={50}
-            drift
-            interactive
-            wavy
-          />
+          <Orb color="#7C3AED" position={[0.2, 0.3]} size={0.35} blur={30} drift interactive wavy />
           <Orb
             color="#06B6D4"
-            position={[0.8, 0.35]}
-            size={0.75}
-            blur={60}
+            position={[0.75, 0.25]}
+            size={0.3}
+            blur={35}
             drift
             interactive
-            wavy={{ scale: 40, speed: 0.8 }}
+            wavy={{ scale: 30, speed: 0.8 }}
           />
-          <Orb color="#E07B3C" position={[0.4, 0.8]} size={0.7} blur={40} drift interactive />
+          <Orb color="#E07B3C" position={[0.35, 0.75]} size={0.25} blur={25} drift interactive />
           <Orb
             color="#D94F8C"
             position={[0.65, 0.65]}
-            size={0.6}
-            blur={45}
+            size={0.3}
+            blur={28}
             drift
             interactive
-            wavy={{ scale: 25 }}
+            wavy={{ scale: 20 }}
           />
         </OrbScene>
       ) : (

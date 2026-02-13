@@ -79,8 +79,7 @@ describe('Interactive hover effects', () => {
         <Orb color="#FF0000" position={[0.3, 0.7]} interactive />
       </OrbScene>,
     );
-    // The transform should reference the orb's position values
-    expect(html).toContain('0.3');
-    expect(html).toContain('0.7');
+    // The transform calc should reference the orb's position values in the parallax offset
+    expect(html).toMatch(/translate\(calc\(.*0\.3.*\).*calc\(.*0\.7.*\)\)/);
   });
 });

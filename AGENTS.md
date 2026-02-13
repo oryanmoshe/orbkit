@@ -31,6 +31,7 @@ orbkit/
 │   │   │   │   ├── grain.tsx         # Canvas-based noise overlay
 │   │   │   │   ├── wavy-filter.tsx   # SVG feTurbulence + feDisplacementMap filter
 │   │   │   │   ├── orb-scene.test.tsx
+│   │   │   │   ├── interactive.test.tsx
 │   │   │   │   └── wavy-filter.test.tsx
 │   │   │   ├── context/
 │   │   │   │   ├── orb-scene-context.ts   # React context, provider hook, consumer hook

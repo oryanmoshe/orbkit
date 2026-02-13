@@ -91,12 +91,12 @@ export function Orb({
 
   // Interactive parallax — CSS custom properties set by scene, offset computed via calc()
   const interactiveEnabled = interactive === true;
-  const intensity = 40; // percentage offset at max displacement
+  const intensity = 35; // percentage offset at max displacement
 
   const interactiveStyle = interactiveEnabled
     ? {
         transform: `translate(calc((var(--orbkit-mx, 0.5) - ${px}) * ${intensity}%), calc((var(--orbkit-my, 0.5) - ${py}) * ${intensity}%))`,
-        transition: 'transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+        transition: 'transform 0.2s ease-out',
         willChange: 'transform' as const,
       }
     : {};
@@ -125,15 +125,28 @@ export function Orb({
     mixBlendMode: blendMode,
   };
 
-  // Drift + interactive: wrapper div for drift, inner div for parallax
+  // Drift + interactive: outer div for drift animation, inner div carries visuals + parallax
   if (driftEnabled && interactiveEnabled) {
     return (
-      <div className="orbkit-orb-drift" style={{ ...orbStyle, ...animationStyle }}>
+      <div
+        className="orbkit-orb-drift"
+        style={{
+          position: 'absolute' as const,
+          width: '130%',
+          height: '130%',
+          top: '-15%',
+          left: '-15%',
+          ...animationStyle,
+        }}
+      >
         <div
           className={className ? `orbkit-orb ${className}` : 'orbkit-orb'}
           style={{
             width: '100%',
             height: '100%',
+            background: orbStyle.background,
+            filter: orbStyle.filter,
+            mixBlendMode: orbStyle.mixBlendMode,
             ...interactiveStyle,
             ...style,
           }}
