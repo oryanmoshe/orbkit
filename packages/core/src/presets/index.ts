@@ -70,7 +70,7 @@ export const minimal: Preset = {
   breathing: 20,
 };
 
-/** All built-in presets */
+/** All built-in presets + any custom presets */
 export const presets: Record<string, Preset> = {
   ocean,
   sunset,
@@ -78,3 +78,10 @@ export const presets: Record<string, Preset> = {
   aurora,
   minimal,
 };
+
+/**
+ * Register a custom preset. Overwrites any existing preset with the same name.
+ */
+export function registerPreset(preset: Preset): void {
+  presets[preset.name] = preset;
+}

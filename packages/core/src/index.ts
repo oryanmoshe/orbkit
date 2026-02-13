@@ -7,7 +7,7 @@ export { Grain } from './components/grain';
 export { useOrbSceneContext } from './context';
 
 // Presets
-export { presets, ocean, sunset, forest, aurora, minimal } from './presets';
+export { presets, registerPreset, ocean, sunset, forest, aurora, minimal } from './presets';
 
 // Utilities
 export { hexToHsl, hslToHex, applySaturation } from './utils/color';
