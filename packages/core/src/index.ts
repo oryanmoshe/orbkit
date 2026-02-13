@@ -25,6 +25,7 @@ export {
   generateGrainIntensity,
 } from './renderers/css-renderer';
 export { createCanvasRenderer } from './renderers/canvas-renderer';
+export { createWebGLRenderer } from './renderers/webgl-renderer';
 
 // Types
 export type {
