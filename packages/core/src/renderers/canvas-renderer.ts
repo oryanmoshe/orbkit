@@ -22,6 +22,7 @@ interface InternalOrb extends OrbRenderConfig {
   orbitParams: OrbitParams;
 }
 
+/** Pre-compute rgba colors and orbit params for each orb config */
 function toInternalOrbs(configs: OrbRenderConfig[]): InternalOrb[] {
   return configs.map((config, index) => ({
     ...config,
