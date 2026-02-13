@@ -70,8 +70,8 @@ orbkit/
 | `packages/core/src/components/grain.tsx` | Canvas-based noise overlay |
 | `packages/core/src/context/orb-scene-context.ts` | React context: scene→orb data flow, monotonic orb index counter |
 | `packages/core/src/utils/keyframe-registry.ts` | CSS @keyframes injection to document head, dedup, SSR guard |
-| `packages/core/src/utils/color.ts` | hexToHsl, hslToHex, applySaturation |
-| `packages/core/src/utils/animation.ts` | Orbit params, drift keyframe generation |
+| `packages/core/src/utils/color.ts` | hexToHsl, hslToHex, applySaturation, hexToRgba |
+| `packages/core/src/utils/animation.ts` | Orbit params, drift keyframes, calculateDriftOffset |
 | `packages/core/src/renderers/css-renderer.ts` | CSS rendering: gradient CSS, orb animation generation |
 | `packages/core/src/presets/index.ts` | 5 built-in presets (ocean, sunset, forest, aurora, minimal) + registerPreset() |
 
